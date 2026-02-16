@@ -13,11 +13,18 @@ function makePrayerCheckpoint(
   title: string,
   time: string,
   mainTitle: string,
-  sunnahTasks: { title: string; type: 'secondary_task' | 'regular_task' }[] = []
+  preSunnah: { title: string; type: 'secondary_task' | 'regular_task' }[] = [],
+  postSunnah: { title: string; type: 'secondary_task' | 'regular_task' }[] = []
 ): Checkpoint {
   const tasks: Task[] = [
-    { id: uid('t'), type: 'main_task', title_ar: mainTitle, is_done: false },
-    ...sunnahTasks.map(s => ({
+    ...preSunnah.map(s => ({
+      id: uid('t'),
+      type: s.type as Task['type'],
+      title_ar: s.title,
+      is_done: false,
+    })),
+    { id: uid('t'), type: 'main_task' as Task['type'], title_ar: mainTitle, is_done: false },
+    ...postSunnah.map(s => ({
       id: uid('t'),
       type: s.type as Task['type'],
       title_ar: s.title,
@@ -42,11 +49,11 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // السحور
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'السحور', is_done: false } as StandaloneTask },
 
-    // سنة الفجر (قبل الصلاة)
-    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة الفجر (ركعتان)', is_done: false } as StandaloneTask },
-
-    // الفجر
-    { kind: 'checkpoint', data: makePrayerCheckpoint('الفجر', prayerTimes.fajr, 'صلاة الفجر') },
+    // الفجر: سنة الفجر -> صلاة الفجر
+    { kind: 'checkpoint', data: makePrayerCheckpoint(
+      'الفجر', prayerTimes.fajr, 'صلاة الفجر',
+      [{ title: 'سنة الفجر (ركعتان)', type: 'secondary_task' }]
+    )},
 
     // أذكار الصباح
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'أذكار الصباح', is_done: false } as StandaloneTask },
@@ -65,35 +72,35 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // الضحى
     { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'الضحى', is_done: false } as StandaloneTask },
 
-    // سنة قبل الظهر (قبل الصلاة)
-    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة قبل الظهر (٤ ركعات)', is_done: false } as StandaloneTask },
+    // الظهر: سنة قبل الظهر -> صلاة الظهر -> سنة بعد الظهر
+    { kind: 'checkpoint', data: makePrayerCheckpoint(
+      'الظهر', prayerTimes.dhuhr, 'صلاة الظهر',
+      [{ title: 'سنة قبل الظهر (٤ ركعات)', type: 'secondary_task' }],
+      [{ title: 'سنة بعد الظهر (ركعتان)', type: 'secondary_task' }]
+    )},
 
-    // الظهر
-    { kind: 'checkpoint', data: makePrayerCheckpoint('الظهر', prayerTimes.dhuhr, 'صلاة الظهر') },
-
-    // سنة بعد الظهر (بعد الصلاة)
-    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة بعد الظهر (ركعتان)', is_done: false } as StandaloneTask },
-
-    // سنة قبل العصر (regular task before Asr)
-    { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'سنة قبل العصر (٤ ركعات)', is_done: false } as StandaloneTask },
-
-    // العصر
-    { kind: 'checkpoint', data: makePrayerCheckpoint('العصر', prayerTimes.asr, 'صلاة العصر') },
+    // العصر: سنة قبل العصر -> صلاة العصر
+    { kind: 'checkpoint', data: makePrayerCheckpoint(
+      'العصر', prayerTimes.asr, 'صلاة العصر',
+      [{ title: 'سنة قبل العصر (٤ ركعات)', type: 'regular_task' }]
+    )},
 
     // أذكار المساء
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'أذكار المساء', is_done: false } as StandaloneTask },
 
-    // المغرب
-    { kind: 'checkpoint', data: makePrayerCheckpoint('المغرب', prayerTimes.maghrib, 'صلاة المغرب') },
+    // المغرب: صلاة المغرب -> سنة بعد المغرب
+    { kind: 'checkpoint', data: makePrayerCheckpoint(
+      'المغرب', prayerTimes.maghrib, 'صلاة المغرب',
+      [],
+      [{ title: 'سنة بعد المغرب (ركعتان)', type: 'secondary_task' }]
+    )},
 
-    // سنة بعد المغرب
-    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة بعد المغرب (ركعتان)', is_done: false } as StandaloneTask },
-
-    // العشاء
-    { kind: 'checkpoint', data: makePrayerCheckpoint('العشاء', prayerTimes.isha, 'صلاة العشاء') },
-
-    // سنة بعد العشاء
-    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة بعد العشاء (ركعتان)', is_done: false } as StandaloneTask },
+    // العشاء: صلاة العشاء -> سنة بعد العشاء
+    { kind: 'checkpoint', data: makePrayerCheckpoint(
+      'العشاء', prayerTimes.isha, 'صلاة العشاء',
+      [],
+      [{ title: 'سنة بعد العشاء (ركعتان)', type: 'secondary_task' }]
+    )},
 
     // القيام / التهجد / الوتر
     { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'القيام', is_done: false } as StandaloneTask },

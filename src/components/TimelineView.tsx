@@ -11,9 +11,21 @@ interface TimelineViewProps {
 
 export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedPrayerId, setExpandedPrayerId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
-    setExpandedId(prev => (prev === id ? null : id));
+    setExpandedId(prev => {
+      if (prev === id) {
+        setExpandedPrayerId(null);
+        return null;
+      }
+      return id;
+    });
+  };
+
+  const togglePrayerExpand = (taskId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedPrayerId(prev => (prev === taskId ? null : taskId));
   };
 
   const updateTimeline = (newTimeline: TimelineItem[]) => {
@@ -57,7 +69,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
         if (item.kind === 'checkpoint') {
           const cp = item.data as Checkpoint;
           const done = isCheckpointDone(cp);
-          const mainTask = cp.tasks.find(t => t.type === 'main_task');
+          const hasTasks = cp.tasks.length > 0;
 
           return (
             <div key={id} className="relative mb-2">
@@ -73,8 +85,8 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
 
               {/* Checkpoint header */}
               <button
-                onClick={() => toggleExpand(id)}
-                className="w-full text-right py-2 pr-2 group"
+                onClick={() => hasTasks && toggleExpand(id)}
+                className={cn("w-full text-right py-2 pr-2 group", !hasTasks && "cursor-default")}
               >
                 {cp.time && (
                   <span className="block text-[11px] font-medium text-primary mb-0.5">
@@ -86,21 +98,23 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                     "text-base font-bold text-foreground",
                     done && "line-through opacity-50"
                   )}>{cp.title_ar}</span>
-                  <svg
-                    className={cn(
-                      'w-4 h-4 text-muted-foreground mr-auto transition-transform duration-200',
-                      isExpanded && 'rotate-180'
-                    )}
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  {hasTasks && (
+                    <svg
+                      className={cn(
+                        'w-4 h-4 text-muted-foreground mr-auto transition-transform duration-200',
+                        isExpanded && 'rotate-180'
+                      )}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
                 </div>
               </button>
 
-              {/* Expanded: checklist items (جماعة، في الوقت، أذكار الصلاة) */}
+              {/* Expanded: tasks (sunnahs + main prayer) */}
               <AnimatePresence>
-                {isExpanded && (
+                {isExpanded && hasTasks && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
@@ -108,24 +122,86 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="pr-4 pb-3 space-y-2">
-                      {cp.checklist.map(cl => (
-                        <div key={cl.id} className="flex items-center gap-3">
-                          <span
-                            className={cn(
-                              'text-sm flex-1 text-right',
-                              cl.is_done ? 'text-muted-foreground line-through' : 'text-foreground/80'
-                            )}
-                          >
-                            {cl.title_ar}
-                          </span>
-                          <Checkbox
-                            checked={cl.is_done}
-                            onCheckedChange={() => toggleTask(index, undefined, cl.id)}
-                            className="h-4 w-4"
-                          />
-                        </div>
-                      ))}
+                    <div className="pr-4 pb-3 space-y-1">
+                      {cp.tasks.map(task => {
+                        const isMainTask = task.type === 'main_task';
+                        const isPrayerExpanded = expandedPrayerId === task.id;
+
+                        return (
+                          <div key={task.id}>
+                            <div className="flex items-center gap-3 py-1.5">
+                              <div
+                                className={cn(
+                                  "flex-1 text-right flex items-center gap-2",
+                                  isMainTask && "cursor-pointer"
+                                )}
+                                onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
+                              >
+                                <span
+                                  className={cn(
+                                    'text-sm',
+                                    isMainTask && 'font-bold text-foreground',
+                                    task.type === 'secondary_task' && 'text-muted-foreground',
+                                    task.type === 'regular_task' && 'text-foreground/80',
+                                    task.is_done && 'line-through opacity-50'
+                                  )}
+                                >
+                                  {task.title_ar}
+                                </span>
+                                {isMainTask && (
+                                  <svg
+                                    className={cn(
+                                      'w-3.5 h-3.5 text-muted-foreground transition-transform duration-200',
+                                      isPrayerExpanded && 'rotate-180'
+                                    )}
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                )}
+                              </div>
+                              <Checkbox
+                                checked={task.is_done}
+                                onCheckedChange={() => toggleTask(index, task.id)}
+                                className="h-4 w-4"
+                              />
+                            </div>
+
+                            {/* Checklist under main prayer */}
+                            <AnimatePresence>
+                              {isMainTask && isPrayerExpanded && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.2, ease: 'easeInOut' }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="pr-6 pb-2 space-y-1.5">
+                                    {cp.checklist.map(cl => (
+                                      <div key={cl.id} className="flex items-center gap-3">
+                                        <span
+                                          className={cn(
+                                            'text-xs flex-1 text-right',
+                                            cl.is_done ? 'text-muted-foreground line-through' : 'text-foreground/70'
+                                          )}
+                                        >
+                                          {cl.title_ar}
+                                        </span>
+                                        <Checkbox
+                                          checked={cl.is_done}
+                                          onCheckedChange={() => toggleTask(index, undefined, cl.id)}
+                                          className="h-3.5 w-3.5"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      })}
                     </div>
                   </motion.div>
                 )}
@@ -134,11 +210,10 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           );
         }
 
-        // Standalone task - always show checkbox
+        // Standalone task
         const task = item.data as StandaloneTask;
         return (
           <div key={id} className="relative mb-1">
-            {/* Dot */}
             <div
               className={cn(
                 'absolute right-[-18px] top-[12px] w-2.5 h-2.5 rounded-full border-2 z-10 transition-colors',
