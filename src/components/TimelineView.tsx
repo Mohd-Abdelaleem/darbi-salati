@@ -50,23 +50,21 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
 
   return (
     <div className="relative pr-6 pl-4 pb-20" dir="rtl">
-      {/* Timeline line */}
-      <div className="absolute right-[18px] top-0 bottom-0 w-[2px] bg-border" />
-
       {day.timeline.map((item, index) => {
-        const id = item.kind === 'checkpoint' ? item.data.id : item.data.id;
+        const id = item.data.id;
         const isExpanded = expandedId === id;
 
         if (item.kind === 'checkpoint') {
           const cp = item.data as Checkpoint;
           const done = isCheckpointDone(cp);
+          const mainTask = cp.tasks.find(t => t.type === 'main_task');
 
           return (
-            <div key={id} className="relative mb-1">
+            <div key={id} className="relative mb-2">
               {/* Dot */}
               <div
                 className={cn(
-                  'absolute right-[-18px] top-[14px] w-3 h-3 rounded-full border-2 z-10 transition-colors',
+                  'absolute right-[-18px] top-[10px] w-3.5 h-3.5 rounded-full border-2 z-10 transition-colors',
                   done
                     ? 'bg-primary border-primary'
                     : 'bg-background border-primary/40'
@@ -76,26 +74,31 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
               {/* Checkpoint header */}
               <button
                 onClick={() => toggleExpand(id)}
-                className="w-full text-right py-3 pr-2 flex items-center gap-2 group"
+                className="w-full text-right py-2 pr-2 group"
               >
-                <span className="text-base font-bold text-foreground">{cp.title_ar}</span>
                 {cp.time && (
-                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  <span className="block text-[11px] font-medium text-primary mb-0.5">
                     {cp.time}
                   </span>
                 )}
-                <svg
-                  className={cn(
-                    'w-4 h-4 text-muted-foreground mr-auto transition-transform duration-200',
-                    isExpanded && 'rotate-180'
-                  )}
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "text-base font-bold text-foreground",
+                    done && "line-through opacity-50"
+                  )}>{cp.title_ar}</span>
+                  <svg
+                    className={cn(
+                      'w-4 h-4 text-muted-foreground mr-auto transition-transform duration-200',
+                      isExpanded && 'rotate-180'
+                    )}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </button>
 
-              {/* Expanded content */}
+              {/* Expanded: checklist items (جماعة، في الوقت، أذكار الصلاة) */}
               <AnimatePresence>
                 {isExpanded && (
                   <motion.div
@@ -106,37 +109,23 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                     className="overflow-hidden"
                   >
                     <div className="pr-4 pb-3 space-y-2">
-                      {/* Tasks */}
-                      {cp.tasks.map(task => (
-                        <TaskRow
-                          key={task.id}
-                          task={task}
-                          onToggle={() => toggleTask(index, task.id)}
-                        />
-                      ))}
-
-                      {/* Checklist */}
-                      {cp.checklist.length > 0 && (
-                        <div className="pr-2 pt-1 space-y-1.5">
-                          {cp.checklist.map(cl => (
-                            <div key={cl.id} className="flex items-center gap-3">
-                              <span
-                                className={cn(
-                                  'text-sm flex-1 text-right',
-                                  cl.is_done ? 'text-muted-foreground line-through' : 'text-foreground/80'
-                                )}
-                              >
-                                {cl.title_ar}
-                              </span>
-                              <Checkbox
-                                checked={cl.is_done}
-                                onCheckedChange={() => toggleTask(index, undefined, cl.id)}
-                                className="h-4 w-4"
-                              />
-                            </div>
-                          ))}
+                      {cp.checklist.map(cl => (
+                        <div key={cl.id} className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              'text-sm flex-1 text-right',
+                              cl.is_done ? 'text-muted-foreground line-through' : 'text-foreground/80'
+                            )}
+                          >
+                            {cl.title_ar}
+                          </span>
+                          <Checkbox
+                            checked={cl.is_done}
+                            onCheckedChange={() => toggleTask(index, undefined, cl.id)}
+                            className="h-4 w-4"
+                          />
                         </div>
-                      )}
+                      ))}
                     </div>
                   </motion.div>
                 )}
@@ -145,14 +134,14 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           );
         }
 
-        // Standalone task
+        // Standalone task - always show checkbox
         const task = item.data as StandaloneTask;
         return (
           <div key={id} className="relative mb-1">
             {/* Dot */}
             <div
               className={cn(
-                'absolute right-[-18px] top-[14px] w-2.5 h-2.5 rounded-full border-2 z-10 transition-colors',
+                'absolute right-[-18px] top-[12px] w-2.5 h-2.5 rounded-full border-2 z-10 transition-colors',
                 task.is_done
                   ? 'bg-primary border-primary'
                   : task.type === 'secondary_task'
@@ -161,13 +150,10 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
               )}
             />
 
-            <button
-              onClick={() => toggleExpand(id)}
-              className="w-full text-right py-2.5 pr-2 flex items-center gap-2"
-            >
+            <div className="flex items-center gap-3 py-2.5 pr-2">
               <span
                 className={cn(
-                  'text-sm',
+                  'text-sm flex-1 text-right',
                   task.type === 'main_task' && 'font-bold text-foreground',
                   task.type === 'secondary_task' && 'text-muted-foreground',
                   task.type === 'regular_task' && 'text-foreground/80',
@@ -176,56 +162,15 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
               >
                 {task.title_ar}
               </span>
-            </button>
-
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="pr-4 pb-2 flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground flex-1 text-right">
-                      {task.is_done ? 'تم ✓' : 'لم يتم بعد'}
-                    </span>
-                    <Checkbox
-                      checked={task.is_done}
-                      onCheckedChange={() => toggleTask(index)}
-                      className="h-5 w-5"
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <Checkbox
+                checked={task.is_done}
+                onCheckedChange={() => toggleTask(index)}
+                className="h-5 w-5"
+              />
+            </div>
           </div>
         );
       })}
-    </div>
-  );
-}
-
-function TaskRow({ task, onToggle }: { task: Task; onToggle: () => void }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span
-        className={cn(
-          'flex-1 text-right',
-          task.type === 'main_task' && 'text-sm font-semibold text-foreground',
-          task.type === 'secondary_task' && 'text-sm text-muted-foreground',
-          task.type === 'regular_task' && 'text-sm text-foreground/80',
-          task.is_done && 'line-through opacity-50'
-        )}
-      >
-        {task.title_ar}
-      </span>
-      <Checkbox
-        checked={task.is_done}
-        onCheckedChange={onToggle}
-        className="h-5 w-5"
-      />
     </div>
   );
 }
