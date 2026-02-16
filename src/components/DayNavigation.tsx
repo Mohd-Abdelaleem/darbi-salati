@@ -1,8 +1,10 @@
+import { useRef, useEffect } from 'react';
 import { format, addDays, subDays } from 'date-fns';
 import { getHijriDate } from '@/lib/hijri';
 import { HIJRI_MONTHS } from '@/types/worship';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { CalendarDays } from 'lucide-react';
 
 interface DayNavigationProps {
   selectedDate: string;
@@ -13,6 +15,8 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
   const today = new Date();
   const todayStr = format(today, 'yyyy-MM-dd');
   const hijriToday = getHijriDate(today);
+  const todayRef = useRef<HTMLButtonElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Generate 15 days around today
   const days = Array.from({ length: 15 }, (_, i) => {
@@ -22,21 +26,32 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
     return { date: d, dateStr, hijri };
   });
 
-  const goToToday = () => onSelectDate(todayStr);
+  const scrollToToday = () => {
+    onSelectDate(todayStr);
+    setTimeout(() => {
+      todayRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }, 50);
+  };
+
+  // Scroll to today on mount
+  useEffect(() => {
+    todayRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }, []);
 
   return (
     <div className="w-full">
       {/* Hijri month header */}
       <div className="flex items-center justify-between py-3 px-4">
         <button
-          onClick={goToToday}
+          onClick={scrollToToday}
           className={cn(
-            'text-xs font-medium px-3 py-1 rounded-full transition-colors',
+            'text-xs font-medium px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5',
             selectedDate === todayStr
               ? 'bg-muted text-muted-foreground'
-              : 'bg-primary text-primary-foreground'
+              : 'bg-accent text-accent-foreground shadow-sm'
           )}
         >
+          <CalendarDays className="w-3.5 h-3.5" />
           اليوم
         </button>
         <h2 className="text-lg font-bold text-foreground">
@@ -45,7 +60,7 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
       </div>
 
       {/* Day cards */}
-      <ScrollArea className="w-full" dir="rtl">
+      <ScrollArea className="w-full" dir="rtl" ref={scrollAreaRef}>
         <div className="flex gap-2 px-4 pb-3" dir="rtl">
           {days.map(({ dateStr, hijri, date }) => {
             const isSelected = dateStr === selectedDate;
@@ -55,6 +70,7 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
             return (
               <button
                 key={dateStr}
+                ref={isToday ? todayRef : undefined}
                 onClick={() => onSelectDate(dateStr)}
                 className={cn(
                   'flex flex-col items-center min-w-[60px] rounded-xl px-3 py-2 transition-all duration-200',
