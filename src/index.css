@@ -34,6 +34,13 @@
     --input: 30 15% 88%;
     --ring: 350 55% 38%;
 
+    --checkpoint-fajr: 160 45% 40%;
+    --checkpoint-sunrise: 38 70% 55%;
+    --checkpoint-dhuhr: 45 65% 50%;
+    --checkpoint-asr: 25 60% 50%;
+    --checkpoint-maghrib: 15 70% 50%;
+    --checkpoint-isha: 230 40% 45%;
+
     --radius: 0.75rem;
 
     --sidebar-background: 30 20% 96%;
@@ -74,6 +81,13 @@
     --border: 0 8% 20%;
     --input: 0 8% 20%;
     --ring: 350 50% 50%;
+
+    --checkpoint-fajr: 160 40% 50%;
+    --checkpoint-sunrise: 38 60% 50%;
+    --checkpoint-dhuhr: 45 55% 55%;
+    --checkpoint-asr: 25 50% 55%;
+    --checkpoint-maghrib: 15 60% 55%;
+    --checkpoint-isha: 230 35% 55%;
 
     --sidebar-background: 0 10% 8%;
     --sidebar-foreground: 30 15% 85%;
