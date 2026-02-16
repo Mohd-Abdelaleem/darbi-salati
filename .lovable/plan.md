@@ -1,72 +1,62 @@
 
 
-# Restructuring: Checkpoints as Time Markers, Prayer as Expandable Task
+# Visual Enhancements: Right Border Colors, Bottom Borders, Vertical Line, Dots, and Indentation
 
-## The Key Insight
+## Changes to `src/components/TimelineView.tsx`
 
-Checkpoints (الفجر، الظهر، etc.) are **time markers** on the timeline. Inside each checkpoint lives:
-- **Sunnah tasks (before prayer)** - secondary tasks
-- **The prayer itself (main task)** - which expands to show the 3-item checklist (جماعة، في الوقت، أذكار الصلاة)
-- **Sunnah tasks (after prayer)** - secondary tasks
+### 1. Right Colored Border per Element
+Each timeline item (checkpoint or standalone task) gets a colored right border (`border-r-2` or `border-r-3`):
+- Checkpoints use their theme color (e.g., `border-r-checkpoint-fajr` for Fajr)
+- Standalone tasks use a muted border (`border-r-primary/20`)
 
-Currently, sunnahs are placed as standalone tasks outside checkpoints. This needs to change: **all sunnahs belong inside their checkpoint**, ordered before/after the main prayer task.
+### 2. Subtle Bottom Border + Margin
+Instead of separator lines, each element gets:
+- `mb-3` margin for spacing
+- `border-b border-border/30` for a very subtle bottom edge
 
----
+### 3. Vertical Line on the Right with Dots
+- A continuous vertical line on the right side: `absolute right-[7px] top-0 bottom-0 w-px bg-border/40`
+- Checkpoints get larger colored dots (`w-3 h-3`) positioned on the line
+- Standalone tasks get smaller dots (`w-2 h-2`) on the line
+- Dots use checkpoint colors when filled (done) and border-only when not done
 
-## Data Changes (`src/lib/default-day.ts`)
+### 4. Indentation for Children
+- Checkpoint expanded tasks (sunnahs + prayer): increase from `pr-4` to `pr-8`
+- Checklist items under main prayer: increase from `pr-6` to `pr-12`
 
-Move all sunnah tasks **inside** their respective checkpoint's `tasks[]` array, in the correct order:
+### 5. Color Maps for Dots and Right Borders
+Re-introduce two maps:
 
-| Checkpoint | Tasks (in order) |
-|---|---|
-| الفجر | سنة الفجر (ركعتان) -> صلاة الفجر |
-| الظهر | سنة قبل الظهر (٤ ركعات) -> صلاة الظهر -> سنة بعد الظهر (ركعتان) |
-| العصر | سنة قبل العصر (٤ ركعات) -> صلاة العصر |
-| المغرب | صلاة المغرب -> سنة بعد المغرب (ركعتان) |
-| العشاء | صلاة العشاء -> سنة بعد العشاء (ركعتان) |
-
-The standalone timeline items will be reduced to only: السحور، أذكار الصباح، الشروق، الضحى، أذكار المساء، القيام، التهجد، الوتر.
-
-Update `makePrayerCheckpoint` to accept pre-prayer and post-prayer sunnah arrays and place them before/after the main task.
-
-## UI Changes (`src/components/TimelineView.tsx`)
-
-### Checkpoint expansion - two levels:
-1. **Tap checkpoint** -> expands to show all tasks (sunnahs + main prayer), each with a checkbox
-2. **Tap main prayer task** -> expands further to show the 3 checklist items (جماعة، في الوقت، أذكار الصلاة)
-
-### Structure when expanded:
 ```text
-05:12
-الفجر                          v
-  سنة الفجر (ركعتان)      [ ]
-  صلاة الفجر               [ ]  v
-    جماعة                  [ ]
-    في الوقت               [ ]
-    أذكار الصلاة           [ ]
+CHECKPOINT_BORDER_RIGHT:
+  الفجر    -> border-r-checkpoint-fajr
+  الشروق   -> border-r-checkpoint-sunrise
+  الظهر    -> border-r-checkpoint-dhuhr
+  العصر    -> border-r-checkpoint-asr
+  المغرب   -> border-r-checkpoint-maghrib
+  العشاء   -> border-r-checkpoint-isha
+
+CHECKPOINT_DOT (for filled/unfilled states - same color families)
 ```
 
-- Track two expansion states: `expandedCheckpoint` (which checkpoint is open) and `expandedPrayer` (which main task shows its checklist)
-- All sunnah tasks inside checkpoint get checkboxes
-- Main prayer task gets a checkbox AND an expand arrow for checklist
+### Container
+- Main container: `relative pr-8 pl-4 pb-20` to make room for the vertical line and dots on the right
 
-## Technical Details
+### Element Structure (checkpoint example)
+```text
+<div className="relative mb-3 border-b border-border/30 border-r-2 border-r-checkpoint-fajr rounded-r-sm pr-3">
+  <!-- dot on vertical line -->
+  <div className="absolute right-[-22px] top-[12px] w-3 h-3 rounded-full ..." />
+  <!-- checkpoint content -->
+</div>
+```
 
-### `src/lib/default-day.ts`
-- Modify `makePrayerCheckpoint` to accept `preSunnah` and `postSunnah` task arrays
-- Place pre-sunnah tasks before the main task, post-sunnah after in the `tasks[]` array
-- Remove all standalone sunnah `TimelineItem` entries from the timeline
-- Keep `سنة قبل العصر` as `regular_task` type, all others as `secondary_task`
-
-### `src/components/TimelineView.tsx`
-- Add `expandedPrayerId` state alongside `expandedId`
-- When checkpoint expands: render each task in `cp.tasks[]` with checkbox and proper styling
-- When a `main_task` is tapped: toggle its nested checklist visibility with animation
-- Checklist items render indented under the main prayer task
-
-### `src/types/worship.ts`
-- No changes needed; the existing `Checkpoint.tasks[]` and `Checkpoint.checklist[]` structure supports this
-
-### localStorage
-- Users will need to clear cached data for the new structure to take effect on existing days
+### Element Structure (standalone task example)
+```text
+<div className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 rounded-r-sm pr-3">
+  <!-- smaller dot -->
+  <div className="absolute right-[-20px] top-[14px] w-2 h-2 rounded-full ..." />
+  <!-- task content -->
+</div>
+```
 
