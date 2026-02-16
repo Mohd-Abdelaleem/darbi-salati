@@ -1,22 +1,24 @@
 import { useRef, useEffect } from 'react';
 import { format, addDays, subDays } from 'date-fns';
 import { getHijriDate } from '@/lib/hijri';
-import { HIJRI_MONTHS } from '@/types/worship';
+import { HIJRI_MONTHS, DayData } from '@/types/worship';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CalendarDays } from 'lucide-react';
+import { getPrayerCompletionStatus, calculateDayPoints } from '@/lib/points';
 
 interface DayNavigationProps {
   selectedDate: string;
   onSelectDate: (date: string) => void;
+  allDays: Record<string, DayData>;
+  getDay: (dateStr: string) => DayData;
 }
 
-export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigationProps) {
+export default function DayNavigation({ selectedDate, onSelectDate, allDays, getDay }: DayNavigationProps) {
   const today = new Date();
   const todayStr = format(today, 'yyyy-MM-dd');
   const hijriToday = getHijriDate(today);
   const todayRef = useRef<HTMLButtonElement>(null);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Generate 15 days around today
   const days = Array.from({ length: 15 }, (_, i) => {
@@ -48,7 +50,7 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
             'text-xs font-medium px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5',
             selectedDate === todayStr
               ? 'bg-muted text-muted-foreground'
-              : 'bg-accent text-accent-foreground shadow-sm'
+              : 'bg-primary text-primary-foreground shadow-sm'
           )}
         >
           <CalendarDays className="w-3.5 h-3.5" />
@@ -60,12 +62,15 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
       </div>
 
       {/* Day cards */}
-      <ScrollArea className="w-full" dir="rtl" ref={scrollAreaRef}>
+      <ScrollArea className="w-full" dir="rtl">
         <div className="flex gap-2 px-4 pb-3" dir="rtl">
           {days.map(({ dateStr, hijri, date }) => {
             const isSelected = dateStr === selectedDate;
             const isToday = dateStr === todayStr;
             const dayName = date.toLocaleDateString('ar-EG', { weekday: 'short' });
+            const dayData = allDays[dateStr];
+            const prayerDots = dayData ? getPrayerCompletionStatus(dayData) : [false, false, false, false, false];
+            const points = dayData ? calculateDayPoints(dayData) : 0;
 
             return (
               <button
@@ -86,6 +91,29 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
                 <span className="text-[9px] opacity-60">
                   {date.getDate()}/{date.getMonth() + 1}
                 </span>
+                {/* Prayer dots */}
+                <div className="flex gap-1 mt-1">
+                  {prayerDots.map((done, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full transition-colors',
+                        done
+                          ? isSelected ? 'bg-primary-foreground' : 'bg-primary'
+                          : isSelected ? 'bg-primary-foreground/30' : 'bg-muted-foreground/30'
+                      )}
+                    />
+                  ))}
+                </div>
+                {/* Points */}
+                {points > 0 && (
+                  <span className={cn(
+                    'text-[8px] font-bold mt-0.5',
+                    isSelected ? 'text-primary-foreground/80' : 'text-primary/70'
+                  )}>
+                    {points}
+                  </span>
+                )}
               </button>
             );
           })}
