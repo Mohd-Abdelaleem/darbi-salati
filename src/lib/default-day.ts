@@ -14,7 +14,8 @@ function makePrayerCheckpoint(
   time: string,
   mainTitle: string,
   preSunnah: { title: string; type: 'secondary_task' | 'regular_task' }[] = [],
-  postSunnah: { title: string; type: 'secondary_task' | 'regular_task' }[] = []
+  postSunnah: { title: string; type: 'secondary_task' | 'regular_task' }[] = [],
+  extraPostTasks: { title: string; type: 'secondary_task' | 'regular_task' }[] = []
 ): Checkpoint {
   const tasks: Task[] = [
     ...preSunnah.map(s => ({
@@ -25,6 +26,15 @@ function makePrayerCheckpoint(
     })),
     { id: uid('t'), type: 'main_task' as Task['type'], title_ar: mainTitle, is_done: false },
     ...postSunnah.map(s => ({
+      id: uid('t'),
+      type: s.type as Task['type'],
+      title_ar: s.title,
+      is_done: false,
+    })),
+    // أذكار الصلاة after every prayer
+    { id: uid('t'), type: 'regular_task' as Task['type'], title_ar: 'أذكار الصلاة', is_done: false },
+    // Extra post tasks (like قرآن الفجر)
+    ...extraPostTasks.map(s => ({
       id: uid('t'),
       type: s.type as Task['type'],
       title_ar: s.title,
@@ -49,10 +59,12 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // السحور
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'السحور', is_done: false } as StandaloneTask },
 
-    // الفجر: سنة الفجر -> صلاة الفجر
+    // الفجر: سنة الفجر -> صلاة الفجر -> أذكار الصلاة -> قرآن الفجر
     { kind: 'checkpoint', data: makePrayerCheckpoint(
       'الفجر', prayerTimes.fajr, 'صلاة الفجر',
-      [{ title: 'سنة الفجر (ركعتان)', type: 'secondary_task' }]
+      [{ title: 'سنة الفجر (ركعتان)', type: 'secondary_task' }],
+      [],
+      [{ title: 'قرآن الفجر', type: 'regular_task' }]
     )},
 
     // أذكار الصباح
@@ -72,14 +84,14 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // الضحى
     { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'الضحى', is_done: false } as StandaloneTask },
 
-    // الظهر: سنة قبل الظهر -> صلاة الظهر -> سنة بعد الظهر
+    // الظهر
     { kind: 'checkpoint', data: makePrayerCheckpoint(
       'الظهر', prayerTimes.dhuhr, 'صلاة الظهر',
       [{ title: 'سنة قبل الظهر (٤ ركعات)', type: 'secondary_task' }],
       [{ title: 'سنة بعد الظهر (ركعتان)', type: 'secondary_task' }]
     )},
 
-    // العصر: سنة قبل العصر -> صلاة العصر
+    // العصر
     { kind: 'checkpoint', data: makePrayerCheckpoint(
       'العصر', prayerTimes.asr, 'صلاة العصر',
       [{ title: 'سنة قبل العصر (٤ ركعات)', type: 'regular_task' }]
@@ -88,14 +100,14 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // أذكار المساء
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'أذكار المساء', is_done: false } as StandaloneTask },
 
-    // المغرب: صلاة المغرب -> سنة بعد المغرب
+    // المغرب
     { kind: 'checkpoint', data: makePrayerCheckpoint(
       'المغرب', prayerTimes.maghrib, 'صلاة المغرب',
       [],
       [{ title: 'سنة بعد المغرب (ركعتان)', type: 'secondary_task' }]
     )},
 
-    // العشاء: صلاة العشاء -> سنة بعد العشاء
+    // العشاء
     { kind: 'checkpoint', data: makePrayerCheckpoint(
       'العشاء', prayerTimes.isha, 'صلاة العشاء',
       [],

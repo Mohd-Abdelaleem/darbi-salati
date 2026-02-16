@@ -3,7 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DayData, TimelineItem, Checkpoint, StandaloneTask } from '@/types/worship';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, LandPlot, type LucideIcon } from 'lucide-react';
+import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, type LucideIcon } from 'lucide-react';
+import mosqueIcon from '@/assets/mosque-icon.png';
+import starDot from '@/assets/star-dot.png';
+import beadsIcon from '@/assets/beads-icon.png';
+import quranIcon from '@/assets/quran-icon.png';
 
 interface TimelineViewProps {
   day: DayData;
@@ -28,22 +32,10 @@ const CHECKPOINT_BORDER_RIGHT: Record<string, string> = {
   'العشاء': 'border-r-checkpoint-isha',
 };
 
-const CHECKPOINT_DOT_BG: Record<string, string> = {
-  'الفجر': 'bg-checkpoint-fajr',
-  'الشروق': 'bg-checkpoint-sunrise',
-  'الظهر': 'bg-checkpoint-dhuhr',
-  'العصر': 'bg-checkpoint-asr',
-  'المغرب': 'bg-checkpoint-maghrib',
-  'العشاء': 'bg-checkpoint-isha',
-};
-
-const CHECKPOINT_DOT_BORDER: Record<string, string> = {
-  'الفجر': 'border-checkpoint-fajr',
-  'الشروق': 'border-checkpoint-sunrise',
-  'الظهر': 'border-checkpoint-dhuhr',
-  'العصر': 'border-checkpoint-asr',
-  'المغرب': 'border-checkpoint-maghrib',
-  'العشاء': 'border-checkpoint-isha',
+// Map task titles to custom icons
+const TASK_ICON_MAP: Record<string, string> = {
+  'أذكار الصلاة': beadsIcon,
+  'قرآن الفجر': quranIcon,
 };
 
 export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
@@ -112,8 +104,6 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           const hasTasks = cp.tasks.length > 0;
           const theme = CHECKPOINT_THEME[cp.title_ar];
           const borderRight = CHECKPOINT_BORDER_RIGHT[cp.title_ar] || 'border-r-primary/20';
-          const dotBg = CHECKPOINT_DOT_BG[cp.title_ar] || 'bg-primary';
-          const dotBorder = CHECKPOINT_DOT_BORDER[cp.title_ar] || 'border-primary';
 
           return (
             <div
@@ -123,16 +113,21 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 borderRight
               )}
             >
-              {/* Dot on vertical line */}
+              {/* Star dot on vertical line */}
               <motion.div
-                className={cn(
-                  "absolute right-[-19px] top-[12px] w-3 h-3 rounded-full border-2",
-                  done ? dotBg : 'bg-background',
-                  dotBorder
-                )}
+                className="absolute right-[-15px] top-[10px] w-4 h-4"
                 animate={{ scale: done ? [1, 1.4, 1] : 1 }}
                 transition={{ duration: 0.3 }}
-              />
+              >
+                <img
+                  src={starDot}
+                  alt=""
+                  className={cn(
+                    "w-full h-full",
+                    done ? 'opacity-100' : 'opacity-30'
+                  )}
+                />
+              </motion.div>
 
               {/* Checkpoint header */}
               <button
@@ -170,6 +165,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                       {cp.tasks.map(task => {
                         const isMainTask = task.type === 'main_task';
                         const isPrayerExpanded = expandedPrayerId === task.id;
+                        const taskIcon = TASK_ICON_MAP[task.title_ar];
 
                         return (
                           <div key={task.id}>
@@ -182,7 +178,10 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                 onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
                               >
                                 {isMainTask && (
-                                  <LandPlot className={cn("w-4 h-4 opacity-60", theme?.color)} />
+                                  <img src={mosqueIcon} alt="" className={cn("w-4 h-4 opacity-60")} />
+                                )}
+                                {taskIcon && (
+                                  <img src={taskIcon} alt="" className="w-4 h-4 opacity-60" />
                                 )}
                                 <span
                                   className={cn(
@@ -253,15 +252,21 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
             key={id}
             className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 pr-3"
           >
-            {/* Smaller dot */}
+            {/* Star dot (smaller) */}
             <motion.div
-              className={cn(
-                "absolute right-[-18px] top-[14px] w-2 h-2 rounded-full border-2",
-                task.is_done ? 'bg-primary border-primary' : 'bg-background border-primary/40'
-              )}
+              className="absolute right-[-14px] top-[12px] w-3 h-3"
               animate={{ scale: task.is_done ? [1, 1.4, 1] : 1 }}
               transition={{ duration: 0.3 }}
-            />
+            >
+              <img
+                src={starDot}
+                alt=""
+                className={cn(
+                  "w-full h-full",
+                  task.is_done ? 'opacity-100' : 'opacity-20'
+                )}
+              />
+            </motion.div>
 
             <div className="flex items-center gap-3 py-2.5">
               <span
