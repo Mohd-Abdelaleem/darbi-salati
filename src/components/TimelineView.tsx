@@ -86,30 +86,17 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
               {/* Checkpoint header */}
               <button
                 onClick={() => hasTasks && toggleExpand(id)}
-                className={cn("w-full text-right py-2 pr-2 group", !hasTasks && "cursor-default")}
+                className={cn("w-full text-right py-2 pr-2", !hasTasks && "cursor-default")}
               >
                 {cp.time && (
-                  <span className="block text-[11px] font-medium text-primary mb-0.5">
+                  <span className="block text-sm font-medium text-primary mb-0.5">
                     {cp.time}
                   </span>
                 )}
-                <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "text-base font-bold text-foreground",
-                    done && "line-through opacity-50"
-                  )}>{cp.title_ar}</span>
-                  {hasTasks && (
-                    <svg
-                      className={cn(
-                        'w-4 h-4 text-muted-foreground mr-auto transition-transform duration-200',
-                        isExpanded && 'rotate-180'
-                      )}
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
-                </div>
+                <span className={cn(
+                  "text-base font-medium text-foreground",
+                  done && "line-through opacity-50"
+                )}>{cp.title_ar}</span>
               </button>
 
               {/* Expanded: tasks (sunnahs + main prayer) */}
@@ -132,15 +119,15 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                             <div className="flex items-center gap-3 py-1.5">
                               <div
                                 className={cn(
-                                  "flex-1 text-right flex items-center gap-2",
+                                  "flex-1 text-right",
                                   isMainTask && "cursor-pointer"
                                 )}
                                 onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
                               >
                                 <span
                                   className={cn(
-                                    'text-sm',
-                                    isMainTask && 'font-bold text-foreground',
+                                    'text-sm font-normal',
+                                    isMainTask && 'text-primary',
                                     task.type === 'secondary_task' && 'text-muted-foreground',
                                     task.type === 'regular_task' && 'text-foreground/80',
                                     task.is_done && 'line-through opacity-50'
@@ -148,17 +135,6 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                 >
                                   {task.title_ar}
                                 </span>
-                                {isMainTask && (
-                                  <svg
-                                    className={cn(
-                                      'w-3.5 h-3.5 text-muted-foreground transition-transform duration-200',
-                                      isPrayerExpanded && 'rotate-180'
-                                    )}
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                )}
                               </div>
                               <Checkbox
                                 checked={task.is_done}
@@ -228,8 +204,8 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
             <div className="flex items-center gap-3 py-2.5 pr-2">
               <span
                 className={cn(
-                  'text-sm flex-1 text-right',
-                  task.type === 'main_task' && 'font-bold text-foreground',
+                  'text-sm font-normal flex-1 text-right',
+                  task.type === 'main_task' && 'text-primary',
                   task.type === 'secondary_task' && 'text-muted-foreground',
                   task.type === 'regular_task' && 'text-foreground/80',
                   task.is_done && 'line-through opacity-50'
