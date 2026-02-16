@@ -3,26 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DayData, TimelineItem, Checkpoint, StandaloneTask } from '@/types/worship';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-
-import fajrIcon from '@/assets/praying.png';
-import sunriseIcon from '@/assets/star.png';
-import dhuhrIcon from '@/assets/nabawi-mosque.png';
-import asrIcon from '@/assets/frame-design.png';
-import maghribIcon from '@/assets/islam.png';
-import ishaIcon from '@/assets/islam.png';
+import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, type LucideIcon } from 'lucide-react';
 
 interface TimelineViewProps {
   day: DayData;
   onUpdate: (day: DayData) => void;
 }
 
-const CHECKPOINT_THEME: Record<string, { color: string; icon: string }> = {
-  'الفجر': { color: 'text-checkpoint-fajr', icon: fajrIcon },
-  'الشروق': { color: 'text-checkpoint-sunrise', icon: sunriseIcon },
-  'الظهر': { color: 'text-checkpoint-dhuhr', icon: dhuhrIcon },
-  'العصر': { color: 'text-checkpoint-asr', icon: asrIcon },
-  'المغرب': { color: 'text-checkpoint-maghrib', icon: maghribIcon },
-  'العشاء': { color: 'text-checkpoint-isha', icon: ishaIcon },
+const CHECKPOINT_THEME: Record<string, { color: string; Icon: LucideIcon }> = {
+  'الفجر': { color: 'text-checkpoint-fajr', Icon: Sunrise },
+  'الشروق': { color: 'text-checkpoint-sunrise', Icon: Sun },
+  'الظهر': { color: 'text-checkpoint-dhuhr', Icon: SunDim },
+  'العصر': { color: 'text-checkpoint-asr', Icon: Sunset },
+  'المغرب': { color: 'text-checkpoint-maghrib', Icon: MoonStar },
+  'العشاء': { color: 'text-checkpoint-isha', Icon: Moon },
 };
 
 const CHECKPOINT_BORDER_RIGHT: Record<string, string> = {
@@ -106,7 +100,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   return (
     <div className="relative pr-8 pl-4 pb-20" dir="rtl">
       {/* Vertical line */}
-      <div className="absolute right-[7px] top-0 bottom-0 w-px bg-border/40" />
+      <div className="absolute right-[7px] top-0 bottom-0 w-[2px] bg-border" />
 
       {day.timeline.map((item, index) => {
         const id = item.data.id;
@@ -125,14 +119,14 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
             <div
               key={id}
               className={cn(
-                "relative mb-3 border-b border-border/30 border-r-2 rounded-r-sm pr-3",
+                "relative mb-3 border-b border-border/30 border-r-2 pr-3",
                 borderRight
               )}
             >
               {/* Dot on vertical line */}
               <div
                 className={cn(
-                  "absolute right-[-22px] top-[12px] w-3 h-3 rounded-full border-2",
+                  "absolute right-[-19px] top-[12px] w-3 h-3 rounded-full border-2",
                   done ? dotBg : 'bg-background',
                   dotBorder
                 )}
@@ -149,8 +143,8 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                   </span>
                 )}
                 <div className="flex items-center gap-2">
-                  {theme?.icon && (
-                    <img src={theme.icon} alt="" className={cn("w-5 h-5 opacity-70", done && "opacity-30")} />
+                  {theme?.Icon && (
+                    <theme.Icon className={cn("w-5 h-5 opacity-70", theme?.color, done && "opacity-30")} />
                   )}
                   <span className={cn(
                     "text-base font-medium",
@@ -252,12 +246,12 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
         return (
           <div
             key={id}
-            className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 rounded-r-sm pr-3"
+            className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 pr-3"
           >
             {/* Smaller dot */}
             <div
               className={cn(
-                "absolute right-[-20px] top-[14px] w-2 h-2 rounded-full border-2",
+                "absolute right-[-18px] top-[14px] w-2 h-2 rounded-full border-2",
                 task.is_done ? 'bg-primary border-primary' : 'bg-background border-primary/40'
               )}
             />
