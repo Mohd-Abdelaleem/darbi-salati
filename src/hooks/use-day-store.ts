@@ -62,5 +62,5 @@ export function useDayStore() {
     }
   }, [selectedDate, allDays, currentDay, updateDay]);
 
-  return { currentDay, selectedDate, setSelectedDate, updateDay, coords };
+  return { currentDay, selectedDate, setSelectedDate, updateDay, coords, allDays, getDay };
 }

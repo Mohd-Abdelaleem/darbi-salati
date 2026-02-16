@@ -31,8 +31,6 @@ function makePrayerCheckpoint(
       title_ar: s.title,
       is_done: false,
     })),
-    // أذكار الصلاة after every prayer
-    { id: uid('t'), type: 'regular_task' as Task['type'], title_ar: 'أذكار الصلاة', is_done: false },
     // Extra post tasks (like قرآن الفجر)
     ...extraPostTasks.map(s => ({
       id: uid('t'),
