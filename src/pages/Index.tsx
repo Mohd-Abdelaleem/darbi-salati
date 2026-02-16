@@ -22,9 +22,17 @@ const Index = () => {
       </header>
 
       {/* Points bar */}
-      <div className="px-4 py-2 bg-card border-b border-border flex items-center justify-between">
-        <span className="text-sm font-bold text-primary">{points} / {maxPoints}</span>
-        <span className="text-xs text-muted-foreground">نقاط اليوم</span>
+      <div className="px-4 py-2 bg-card border-b border-border space-y-1.5">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-bold text-primary">{points} / {maxPoints}</span>
+          <span className="text-xs text-muted-foreground">نقاط اليوم</span>
+        </div>
+        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-l from-primary to-accent transition-all duration-500 ease-out rounded-full"
+            style={{ width: `${maxPoints > 0 ? (points / maxPoints) * 100 : 0}%` }}
+          />
+        </div>
       </div>
 
       {/* Timeline */}

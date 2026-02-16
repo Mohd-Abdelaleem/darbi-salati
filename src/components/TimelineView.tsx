@@ -66,13 +66,13 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
 
     if (item.kind === 'task' && !taskId) {
       item.data = { ...item.data, is_done: !item.data.is_done };
-    } else if (item.kind === 'checkpoint' && taskId) {
+    } else if (item.kind === 'checkpoint') {
       const cp = { ...item.data } as Checkpoint;
       if (checklistItemId) {
         cp.checklist = cp.checklist.map(cl =>
           cl.id === checklistItemId ? { ...cl, is_done: !cl.is_done } : cl
         );
-      } else {
+      } else if (taskId) {
         cp.tasks = cp.tasks.map(t =>
           t.id === taskId ? { ...t, is_done: !t.is_done } : t
         );
@@ -112,7 +112,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 {/* Checkpoint header */}
                 <button
                   onClick={() => hasTasks && toggleExpand(id)}
-                  className={cn("w-full text-right py-2", !hasTasks && "cursor-default")}
+                  className={cn("w-full text-right py-2 transition-all duration-200 hover:bg-muted/50 active:scale-[0.99]", !hasTasks && "cursor-default")}
                 >
                   {cp.time && (
                     <span className={cn("block text-sm font-medium mb-0.5", theme?.color || 'text-primary')}>
@@ -194,18 +194,23 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                   >
                                     <div className="pr-6 pb-2 flex flex-wrap gap-3">
                                       {cp.checklist.map(cl => (
-                                        <button
+                                        <label
                                           key={cl.id}
-                                          onClick={() => toggleTask(index, undefined, cl.id)}
                                           className={cn(
-                                            'text-xs px-3 py-1 rounded-full border transition-colors',
+                                            'text-xs px-3 py-1.5 border transition-all duration-200 cursor-pointer flex items-center gap-1.5 select-none',
+                                            'hover:shadow-sm hover:scale-105 active:scale-95',
                                             cl.is_done
-                                              ? 'bg-primary/10 border-primary/30 text-primary line-through'
-                                              : 'bg-muted/50 border-border text-foreground/70 hover:bg-muted'
+                                              ? 'bg-primary/15 border-primary/40 text-primary'
+                                              : 'bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:border-primary/20'
                                           )}
                                         >
-                                          {cl.title_ar}
-                                        </button>
+                                          <Checkbox
+                                            checked={cl.is_done}
+                                            onCheckedChange={() => toggleTask(index, undefined, cl.id)}
+                                            className="h-3 w-3"
+                                          />
+                                          <span className={cn(cl.is_done && 'line-through')}>{cl.title_ar}</span>
+                                        </label>
                                       ))}
                                     </div>
                                   </motion.div>
