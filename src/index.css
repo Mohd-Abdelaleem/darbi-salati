@@ -108,5 +108,6 @@
   body {
     @apply bg-background text-foreground font-tajawal;
     direction: rtl;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.04'%3E%3Cpath d='M30 0L30 10M30 50L30 60M0 30L10 30M50 30L60 30M30 25a5 5 0 110 10 5 5 0 010-10zM15 15l5 5M40 40l5 5M15 45l5-5M40 20l5-5'/%3E%3Cpath d='M30 15l4.33 2.5v5L30 25l-4.33-2.5v-5L30 15zM30 35l4.33 2.5v5L30 45l-4.33-2.5v-5L30 35zM10 25l4.33 2.5v5L10 35l-4.33-2.5v-5L10 25zM50 25l4.33 2.5v5L50 35l-4.33-2.5v-5L50 25z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 }
