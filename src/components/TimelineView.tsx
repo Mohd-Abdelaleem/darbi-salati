@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DayData, TimelineItem, Checkpoint, StandaloneTask, Task, ChecklistItem } from '@/types/worship';
+import { DayData, TimelineItem, Checkpoint, StandaloneTask } from '@/types/worship';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
@@ -25,23 +25,6 @@ const CHECKPOINT_THEME: Record<string, { color: string; icon: string }> = {
   'العشاء': { color: 'text-checkpoint-isha', icon: ishaIcon },
 };
 
-const CHECKPOINT_DOT_BG: Record<string, string> = {
-  'الفجر': 'bg-checkpoint-fajr border-checkpoint-fajr',
-  'الشروق': 'bg-checkpoint-sunrise border-checkpoint-sunrise',
-  'الظهر': 'bg-checkpoint-dhuhr border-checkpoint-dhuhr',
-  'العصر': 'bg-checkpoint-asr border-checkpoint-asr',
-  'المغرب': 'bg-checkpoint-maghrib border-checkpoint-maghrib',
-  'العشاء': 'bg-checkpoint-isha border-checkpoint-isha',
-};
-
-const CHECKPOINT_DOT_BORDER: Record<string, string> = {
-  'الفجر': 'border-checkpoint-fajr/40',
-  'الشروق': 'border-checkpoint-sunrise/40',
-  'الظهر': 'border-checkpoint-dhuhr/40',
-  'العصر': 'border-checkpoint-asr/40',
-  'المغرب': 'border-checkpoint-maghrib/40',
-  'العشاء': 'border-checkpoint-isha/40',
-};
 
 export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -95,7 +78,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   };
 
   return (
-    <div className="relative pr-6 pl-4 pb-20" dir="rtl">
+    <div className="relative px-4 pb-20" dir="rtl">
       {day.timeline.map((item, index) => {
         const id = item.data.id;
         const isExpanded = expandedId === id;
@@ -105,20 +88,9 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           const done = isCheckpointDone(cp);
           const hasTasks = cp.tasks.length > 0;
           const theme = CHECKPOINT_THEME[cp.title_ar];
-          const dotDone = CHECKPOINT_DOT_BG[cp.title_ar] || 'bg-primary border-primary';
-          const dotUndone = CHECKPOINT_DOT_BORDER[cp.title_ar] || 'border-primary/40';
 
           return (
             <div key={id} className="relative mb-2">
-              {/* Dot */}
-              <div
-                className={cn(
-                  'absolute right-[-18px] top-[10px] w-3.5 h-3.5 rounded-full border-2 z-10 transition-colors',
-                  done
-                    ? dotDone
-                    : cn('bg-background', dotUndone)
-                )}
-              />
 
               {/* Checkpoint header */}
               <button
@@ -233,16 +205,6 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
         const task = item.data as StandaloneTask;
         return (
           <div key={id} className="relative mb-1">
-            <div
-              className={cn(
-                'absolute right-[-18px] top-[12px] w-2.5 h-2.5 rounded-full border-2 z-10 transition-colors',
-                task.is_done
-                  ? 'bg-primary border-primary'
-                  : task.type === 'secondary_task'
-                  ? 'bg-background border-muted-foreground/30'
-                  : 'bg-background border-primary/30'
-              )}
-            />
 
             <div className="flex items-center gap-3 py-2.5 pr-2">
               <span
