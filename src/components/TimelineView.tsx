@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DayData, TimelineItem, Checkpoint, StandaloneTask } from '@/types/worship';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, type LucideIcon } from 'lucide-react';
+import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, LandPlot, type LucideIcon } from 'lucide-react';
 
 interface TimelineViewProps {
   day: DayData;
@@ -124,12 +124,14 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
               )}
             >
               {/* Dot on vertical line */}
-              <div
+              <motion.div
                 className={cn(
                   "absolute right-[-19px] top-[12px] w-3 h-3 rounded-full border-2",
                   done ? dotBg : 'bg-background',
                   dotBorder
                 )}
+                animate={{ scale: done ? [1, 1.4, 1] : 1 }}
+                transition={{ duration: 0.3 }}
               />
 
               {/* Checkpoint header */}
@@ -174,11 +176,14 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                             <div className="flex items-center gap-3 py-1.5">
                               <div
                                 className={cn(
-                                  "flex-1 text-right",
+                                  "flex-1 text-right flex items-center gap-2",
                                   isMainTask && "cursor-pointer"
                                 )}
                                 onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
                               >
+                                {isMainTask && (
+                                  <LandPlot className={cn("w-4 h-4 opacity-60", theme?.color)} />
+                                )}
                                 <span
                                   className={cn(
                                     'text-sm font-normal',
@@ -249,11 +254,13 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
             className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 pr-3"
           >
             {/* Smaller dot */}
-            <div
+            <motion.div
               className={cn(
                 "absolute right-[-18px] top-[14px] w-2 h-2 rounded-full border-2",
                 task.is_done ? 'bg-primary border-primary' : 'bg-background border-primary/40'
               )}
+              animate={{ scale: task.is_done ? [1, 1.4, 1] : 1 }}
+              transition={{ duration: 0.3 }}
             />
 
             <div className="flex items-center gap-3 py-2.5">

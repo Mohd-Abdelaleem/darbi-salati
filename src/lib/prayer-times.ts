@@ -2,7 +2,7 @@ import { Coordinates, CalculationMethod, PrayerTimes as AdhanPrayerTimes } from 
 import type { PrayerTimes } from '@/types/worship';
 
 function fmt(d: Date): string {
-  return d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
 export function calculatePrayerTimes(date: Date, lat: number, lon: number): PrayerTimes {
