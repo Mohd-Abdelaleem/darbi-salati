@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayData, TimelineItem, Checkpoint, StandaloneTask } from '@/types/worship';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, type LucideIcon } from 'lucide-react';
 import mosqueIcon from '@/assets/mosque-icon.png';
-import starDot from '@/assets/star-dot.png';
 import beadsIcon from '@/assets/beads-icon.png';
 import quranIcon from '@/assets/quran-icon.png';
 
@@ -32,7 +32,6 @@ const CHECKPOINT_BORDER_RIGHT: Record<string, string> = {
   'العشاء': 'border-r-checkpoint-isha',
 };
 
-// Map task titles to custom icons
 const TASK_ICON_MAP: Record<string, string> = {
   'أذكار الصلاة': beadsIcon,
   'قرآن الفجر': quranIcon,
@@ -90,10 +89,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   };
 
   return (
-    <div className="relative pr-8 pl-4 pb-20" dir="rtl">
-      {/* Vertical line */}
-      <div className="absolute right-[7px] top-0 bottom-0 w-[2px] bg-border" />
-
+    <div className="relative pr-6 pl-4 pb-20" dir="rtl">
       {day.timeline.map((item, index) => {
         const id = item.data.id;
         const isExpanded = expandedId === id;
@@ -106,141 +102,126 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           const borderRight = CHECKPOINT_BORDER_RIGHT[cp.title_ar] || 'border-r-primary/20';
 
           return (
-            <div
-              key={id}
-              className={cn(
-                "relative mb-3 border-b border-border/30 border-r-2 pr-3",
-                borderRight
-              )}
-            >
-              {/* Star dot on vertical line */}
-              <motion.div
-                className="absolute right-[-15px] top-[10px] w-4 h-4"
-                animate={{ scale: done ? [1, 1.4, 1] : 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <img
-                  src={starDot}
-                  alt=""
-                  className={cn(
-                    "w-full h-full",
-                    done ? 'opacity-100' : 'opacity-30'
-                  )}
-                />
-              </motion.div>
-
-              {/* Checkpoint header */}
-              <button
-                onClick={() => hasTasks && toggleExpand(id)}
-                className={cn("w-full text-right py-2", !hasTasks && "cursor-default")}
-              >
-                {cp.time && (
-                  <span className={cn("block text-sm font-medium mb-0.5", theme?.color || 'text-primary')}>
-                    {cp.time}
-                  </span>
+            <div key={id}>
+              <div
+                className={cn(
+                  "relative border-r-2 pr-3",
+                  borderRight
                 )}
-                <div className="flex items-center gap-2">
-                  {theme?.Icon && (
-                    <theme.Icon className={cn("w-5 h-5 opacity-70", theme?.color, done && "opacity-30")} />
+              >
+                {/* Checkpoint header */}
+                <button
+                  onClick={() => hasTasks && toggleExpand(id)}
+                  className={cn("w-full text-right py-2", !hasTasks && "cursor-default")}
+                >
+                  {cp.time && (
+                    <span className={cn("block text-sm font-medium mb-0.5", theme?.color || 'text-primary')}>
+                      {cp.time}
+                    </span>
                   )}
-                  <span className={cn(
-                    "text-base font-medium",
-                    theme?.color || 'text-foreground',
-                    done && "line-through opacity-50"
-                  )}>{cp.title_ar}</span>
-                </div>
-              </button>
+                  <div className="flex items-center gap-2">
+                    {theme?.Icon && (
+                      <theme.Icon className={cn("w-5 h-5 opacity-70", theme?.color, done && "opacity-30")} />
+                    )}
+                    <span className={cn(
+                      "text-base font-medium",
+                      theme?.color || 'text-foreground',
+                      done && "line-through opacity-50"
+                    )}>{cp.title_ar}</span>
+                  </div>
+                </button>
 
-              {/* Expanded: tasks */}
-              <AnimatePresence>
-                {isExpanded && hasTasks && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pr-8 pb-3 space-y-1">
-                      {cp.tasks.map(task => {
-                        const isMainTask = task.type === 'main_task';
-                        const isPrayerExpanded = expandedPrayerId === task.id;
-                        const taskIcon = TASK_ICON_MAP[task.title_ar];
+                {/* Expanded: tasks */}
+                <AnimatePresence>
+                  {isExpanded && hasTasks && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pr-8 pb-3 space-y-1">
+                        {cp.tasks.map(task => {
+                          const isMainTask = task.type === 'main_task';
+                          const isPrayerExpanded = expandedPrayerId === task.id;
+                          const taskIcon = TASK_ICON_MAP[task.title_ar];
 
-                        return (
-                          <div key={task.id}>
-                            <div className="flex items-center gap-3 py-1.5">
-                              <div
-                                className={cn(
-                                  "flex-1 text-right flex items-center gap-2",
-                                  isMainTask && "cursor-pointer"
-                                )}
-                                onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
-                              >
-                                {isMainTask && (
-                                  <img src={mosqueIcon} alt="" className={cn("w-4 h-4 opacity-60")} />
-                                )}
-                                {taskIcon && (
-                                  <img src={taskIcon} alt="" className="w-4 h-4 opacity-60" />
-                                )}
-                                <span
+                          return (
+                            <div key={task.id}>
+                              <div className="flex items-center gap-3 py-1.5">
+                                <div
                                   className={cn(
-                                    'text-sm font-normal',
-                                    isMainTask && (theme?.color || 'text-primary'),
-                                    task.type === 'secondary_task' && 'text-muted-foreground',
-                                    task.type === 'regular_task' && 'text-foreground/80',
-                                    task.is_done && 'line-through opacity-50'
+                                    "flex-1 text-right flex items-center gap-2",
+                                    isMainTask && "cursor-pointer"
                                   )}
+                                  onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
                                 >
-                                  {task.title_ar}
-                                </span>
+                                  {isMainTask && (
+                                    <img src={mosqueIcon} alt="" className={cn("w-4 h-4 opacity-60")} />
+                                  )}
+                                  {taskIcon && (
+                                    <img src={taskIcon} alt="" className="w-4 h-4 opacity-60" />
+                                  )}
+                                  <span
+                                    className={cn(
+                                      'text-sm font-normal',
+                                      isMainTask && (theme?.color || 'text-primary'),
+                                      task.type === 'secondary_task' && 'text-muted-foreground',
+                                      task.type === 'regular_task' && 'text-foreground/80',
+                                      task.is_done && 'line-through opacity-50'
+                                    )}
+                                  >
+                                    {task.title_ar}
+                                  </span>
+                                </div>
+                                <Checkbox
+                                  checked={task.is_done}
+                                  onCheckedChange={() => toggleTask(index, task.id)}
+                                  className="h-4 w-4"
+                                />
                               </div>
-                              <Checkbox
-                                checked={task.is_done}
-                                onCheckedChange={() => toggleTask(index, task.id)}
-                                className="h-4 w-4"
-                              />
-                            </div>
 
-                            {/* Checklist under main prayer */}
-                            <AnimatePresence>
-                              {isMainTask && isPrayerExpanded && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: 'auto', opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.2, ease: 'easeInOut' }}
-                                  className="overflow-hidden"
-                                >
-                                  <div className="pr-12 pb-2 space-y-1.5">
-                                    {cp.checklist.map(cl => (
-                                      <div key={cl.id} className="flex items-center gap-3">
-                                        <span
+                              {/* Checklist under main prayer - inline row */}
+                              <AnimatePresence>
+                                {isMainTask && isPrayerExpanded && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="pr-6 pb-2 flex flex-wrap gap-3">
+                                      {cp.checklist.map(cl => (
+                                        <button
+                                          key={cl.id}
+                                          onClick={() => toggleTask(index, undefined, cl.id)}
                                           className={cn(
-                                            'text-xs flex-1 text-right',
-                                            cl.is_done ? 'text-muted-foreground line-through' : 'text-foreground/70'
+                                            'text-xs px-3 py-1 rounded-full border transition-colors',
+                                            cl.is_done
+                                              ? 'bg-primary/10 border-primary/30 text-primary line-through'
+                                              : 'bg-muted/50 border-border text-foreground/70 hover:bg-muted'
                                           )}
                                         >
                                           {cl.title_ar}
-                                        </span>
-                                        <Checkbox
-                                          checked={cl.is_done}
-                                          onCheckedChange={() => toggleTask(index, undefined, cl.id)}
-                                          className="h-3.5 w-3.5"
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Separator after checkpoint */}
+              <Separator className="my-2" />
             </div>
           );
         }
@@ -248,26 +229,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
         // Standalone task
         const task = item.data as StandaloneTask;
         return (
-          <div
-            key={id}
-            className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 pr-3"
-          >
-            {/* Star dot (smaller) */}
-            <motion.div
-              className="absolute right-[-14px] top-[12px] w-3 h-3"
-              animate={{ scale: task.is_done ? [1, 1.4, 1] : 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <img
-                src={starDot}
-                alt=""
-                className={cn(
-                  "w-full h-full",
-                  task.is_done ? 'opacity-100' : 'opacity-20'
-                )}
-              />
-            </motion.div>
-
+          <div key={id} className="relative border-r-2 border-r-primary/20 pr-3">
             <div className="flex items-center gap-3 py-2.5">
               <span
                 className={cn(
