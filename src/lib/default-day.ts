@@ -42,10 +42,11 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // السحور
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'السحور', is_done: false } as StandaloneTask },
 
+    // سنة الفجر (قبل الصلاة)
+    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة الفجر (ركعتان)', is_done: false } as StandaloneTask },
+
     // الفجر
-    { kind: 'checkpoint', data: makePrayerCheckpoint('الفجر', prayerTimes.fajr, 'صلاة الفجر', [
-      { title: 'سنة الفجر (ركعتان)', type: 'secondary_task' },
-    ]) },
+    { kind: 'checkpoint', data: makePrayerCheckpoint('الفجر', prayerTimes.fajr, 'صلاة الفجر') },
 
     // أذكار الصباح
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'أذكار الصباح', is_done: false } as StandaloneTask },
@@ -64,11 +65,14 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     // الضحى
     { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'الضحى', is_done: false } as StandaloneTask },
 
+    // سنة قبل الظهر (قبل الصلاة)
+    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة قبل الظهر (٤ ركعات)', is_done: false } as StandaloneTask },
+
     // الظهر
-    { kind: 'checkpoint', data: makePrayerCheckpoint('الظهر', prayerTimes.dhuhr, 'صلاة الظهر', [
-      { title: 'سنة قبل الظهر (٤ ركعات)', type: 'secondary_task' },
-      { title: 'سنة بعد الظهر (ركعتان)', type: 'secondary_task' },
-    ]) },
+    { kind: 'checkpoint', data: makePrayerCheckpoint('الظهر', prayerTimes.dhuhr, 'صلاة الظهر') },
+
+    // سنة بعد الظهر (بعد الصلاة)
+    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة بعد الظهر (ركعتان)', is_done: false } as StandaloneTask },
 
     // سنة قبل العصر (regular task before Asr)
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'سنة قبل العصر (٤ ركعات)', is_done: false } as StandaloneTask },
@@ -80,14 +84,16 @@ export function generateDefaultDay(dateGregorian: string, hijri: { year: number;
     { kind: 'task', data: { id: uid('st'), type: 'regular_task', title_ar: 'أذكار المساء', is_done: false } as StandaloneTask },
 
     // المغرب
-    { kind: 'checkpoint', data: makePrayerCheckpoint('المغرب', prayerTimes.maghrib, 'صلاة المغرب', [
-      { title: 'سنة بعد المغرب (ركعتان)', type: 'secondary_task' },
-    ]) },
+    { kind: 'checkpoint', data: makePrayerCheckpoint('المغرب', prayerTimes.maghrib, 'صلاة المغرب') },
+
+    // سنة بعد المغرب
+    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة بعد المغرب (ركعتان)', is_done: false } as StandaloneTask },
 
     // العشاء
-    { kind: 'checkpoint', data: makePrayerCheckpoint('العشاء', prayerTimes.isha, 'صلاة العشاء', [
-      { title: 'سنة بعد العشاء (ركعتان)', type: 'secondary_task' },
-    ]) },
+    { kind: 'checkpoint', data: makePrayerCheckpoint('العشاء', prayerTimes.isha, 'صلاة العشاء') },
+
+    // سنة بعد العشاء
+    { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'سنة بعد العشاء (ركعتان)', is_done: false } as StandaloneTask },
 
     // القيام / التهجد / الوتر
     { kind: 'task', data: { id: uid('st'), type: 'secondary_task', title_ar: 'القيام', is_done: false } as StandaloneTask },

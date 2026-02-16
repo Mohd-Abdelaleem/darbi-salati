@@ -22,10 +22,23 @@ export default function DayNavigation({ selectedDate, onSelectDate }: DayNavigat
     return { date: d, dateStr, hijri };
   });
 
+  const goToToday = () => onSelectDate(todayStr);
+
   return (
     <div className="w-full">
       {/* Hijri month header */}
-      <div className="text-center py-3 px-4">
+      <div className="flex items-center justify-between py-3 px-4">
+        <button
+          onClick={goToToday}
+          className={cn(
+            'text-xs font-medium px-3 py-1 rounded-full transition-colors',
+            selectedDate === todayStr
+              ? 'bg-muted text-muted-foreground'
+              : 'bg-primary text-primary-foreground'
+          )}
+        >
+          اليوم
+        </button>
         <h2 className="text-lg font-bold text-foreground">
           {HIJRI_MONTHS[hijriToday.month - 1]} {hijriToday.year} هـ
         </h2>
