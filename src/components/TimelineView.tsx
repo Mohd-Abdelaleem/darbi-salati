@@ -25,6 +25,32 @@ const CHECKPOINT_THEME: Record<string, { color: string; icon: string }> = {
   'العشاء': { color: 'text-checkpoint-isha', icon: ishaIcon },
 };
 
+const CHECKPOINT_BORDER_RIGHT: Record<string, string> = {
+  'الفجر': 'border-r-checkpoint-fajr',
+  'الشروق': 'border-r-checkpoint-sunrise',
+  'الظهر': 'border-r-checkpoint-dhuhr',
+  'العصر': 'border-r-checkpoint-asr',
+  'المغرب': 'border-r-checkpoint-maghrib',
+  'العشاء': 'border-r-checkpoint-isha',
+};
+
+const CHECKPOINT_DOT_BG: Record<string, string> = {
+  'الفجر': 'bg-checkpoint-fajr',
+  'الشروق': 'bg-checkpoint-sunrise',
+  'الظهر': 'bg-checkpoint-dhuhr',
+  'العصر': 'bg-checkpoint-asr',
+  'المغرب': 'bg-checkpoint-maghrib',
+  'العشاء': 'bg-checkpoint-isha',
+};
+
+const CHECKPOINT_DOT_BORDER: Record<string, string> = {
+  'الفجر': 'border-checkpoint-fajr',
+  'الشروق': 'border-checkpoint-sunrise',
+  'الظهر': 'border-checkpoint-dhuhr',
+  'العصر': 'border-checkpoint-asr',
+  'المغرب': 'border-checkpoint-maghrib',
+  'العشاء': 'border-checkpoint-isha',
+};
 
 export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -78,7 +104,10 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   };
 
   return (
-    <div className="relative px-4 pb-20" dir="rtl">
+    <div className="relative pr-8 pl-4 pb-20" dir="rtl">
+      {/* Vertical line */}
+      <div className="absolute right-[7px] top-0 bottom-0 w-px bg-border/40" />
+
       {day.timeline.map((item, index) => {
         const id = item.data.id;
         const isExpanded = expandedId === id;
@@ -88,14 +117,31 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           const done = isCheckpointDone(cp);
           const hasTasks = cp.tasks.length > 0;
           const theme = CHECKPOINT_THEME[cp.title_ar];
+          const borderRight = CHECKPOINT_BORDER_RIGHT[cp.title_ar] || 'border-r-primary/20';
+          const dotBg = CHECKPOINT_DOT_BG[cp.title_ar] || 'bg-primary';
+          const dotBorder = CHECKPOINT_DOT_BORDER[cp.title_ar] || 'border-primary';
 
           return (
-            <div key={id} className="relative mb-2">
+            <div
+              key={id}
+              className={cn(
+                "relative mb-3 border-b border-border/30 border-r-2 rounded-r-sm pr-3",
+                borderRight
+              )}
+            >
+              {/* Dot on vertical line */}
+              <div
+                className={cn(
+                  "absolute right-[-22px] top-[12px] w-3 h-3 rounded-full border-2",
+                  done ? dotBg : 'bg-background',
+                  dotBorder
+                )}
+              />
 
               {/* Checkpoint header */}
               <button
                 onClick={() => hasTasks && toggleExpand(id)}
-                className={cn("w-full text-right py-2 pr-2", !hasTasks && "cursor-default")}
+                className={cn("w-full text-right py-2", !hasTasks && "cursor-default")}
               >
                 {cp.time && (
                   <span className={cn("block text-sm font-medium mb-0.5", theme?.color || 'text-primary')}>
@@ -114,7 +160,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 </div>
               </button>
 
-              {/* Expanded: tasks (sunnahs + main prayer) */}
+              {/* Expanded: tasks */}
               <AnimatePresence>
                 {isExpanded && hasTasks && (
                   <motion.div
@@ -124,7 +170,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="pr-4 pb-3 space-y-1">
+                    <div className="pr-8 pb-3 space-y-1">
                       {cp.tasks.map(task => {
                         const isMainTask = task.type === 'main_task';
                         const isPrayerExpanded = expandedPrayerId === task.id;
@@ -168,7 +214,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                   transition={{ duration: 0.2, ease: 'easeInOut' }}
                                   className="overflow-hidden"
                                 >
-                                  <div className="pr-6 pb-2 space-y-1.5">
+                                  <div className="pr-12 pb-2 space-y-1.5">
                                     {cp.checklist.map(cl => (
                                       <div key={cl.id} className="flex items-center gap-3">
                                         <span
@@ -204,9 +250,19 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
         // Standalone task
         const task = item.data as StandaloneTask;
         return (
-          <div key={id} className="relative mb-1">
+          <div
+            key={id}
+            className="relative mb-2 border-b border-border/20 border-r-2 border-r-primary/20 rounded-r-sm pr-3"
+          >
+            {/* Smaller dot */}
+            <div
+              className={cn(
+                "absolute right-[-20px] top-[14px] w-2 h-2 rounded-full border-2",
+                task.is_done ? 'bg-primary border-primary' : 'bg-background border-primary/40'
+              )}
+            />
 
-            <div className="flex items-center gap-3 py-2.5 pr-2">
+            <div className="flex items-center gap-3 py-2.5">
               <span
                 className={cn(
                   'text-sm font-normal flex-1 text-right',
