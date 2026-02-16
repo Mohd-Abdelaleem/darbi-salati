@@ -4,10 +4,44 @@ import { DayData, TimelineItem, Checkpoint, StandaloneTask, Task, ChecklistItem 
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
+import fajrIcon from '@/assets/praying.png';
+import sunriseIcon from '@/assets/star.png';
+import dhuhrIcon from '@/assets/nabawi-mosque.png';
+import asrIcon from '@/assets/frame-design.png';
+import maghribIcon from '@/assets/islam.png';
+import ishaIcon from '@/assets/islam.png';
+
 interface TimelineViewProps {
   day: DayData;
   onUpdate: (day: DayData) => void;
 }
+
+const CHECKPOINT_THEME: Record<string, { color: string; icon: string }> = {
+  'الفجر': { color: 'text-checkpoint-fajr', icon: fajrIcon },
+  'الشروق': { color: 'text-checkpoint-sunrise', icon: sunriseIcon },
+  'الظهر': { color: 'text-checkpoint-dhuhr', icon: dhuhrIcon },
+  'العصر': { color: 'text-checkpoint-asr', icon: asrIcon },
+  'المغرب': { color: 'text-checkpoint-maghrib', icon: maghribIcon },
+  'العشاء': { color: 'text-checkpoint-isha', icon: ishaIcon },
+};
+
+const CHECKPOINT_DOT_BG: Record<string, string> = {
+  'الفجر': 'bg-checkpoint-fajr border-checkpoint-fajr',
+  'الشروق': 'bg-checkpoint-sunrise border-checkpoint-sunrise',
+  'الظهر': 'bg-checkpoint-dhuhr border-checkpoint-dhuhr',
+  'العصر': 'bg-checkpoint-asr border-checkpoint-asr',
+  'المغرب': 'bg-checkpoint-maghrib border-checkpoint-maghrib',
+  'العشاء': 'bg-checkpoint-isha border-checkpoint-isha',
+};
+
+const CHECKPOINT_DOT_BORDER: Record<string, string> = {
+  'الفجر': 'border-checkpoint-fajr/40',
+  'الشروق': 'border-checkpoint-sunrise/40',
+  'الظهر': 'border-checkpoint-dhuhr/40',
+  'العصر': 'border-checkpoint-asr/40',
+  'المغرب': 'border-checkpoint-maghrib/40',
+  'العشاء': 'border-checkpoint-isha/40',
+};
 
 export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -70,6 +104,9 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           const cp = item.data as Checkpoint;
           const done = isCheckpointDone(cp);
           const hasTasks = cp.tasks.length > 0;
+          const theme = CHECKPOINT_THEME[cp.title_ar];
+          const dotDone = CHECKPOINT_DOT_BG[cp.title_ar] || 'bg-primary border-primary';
+          const dotUndone = CHECKPOINT_DOT_BORDER[cp.title_ar] || 'border-primary/40';
 
           return (
             <div key={id} className="relative mb-2">
@@ -78,8 +115,8 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 className={cn(
                   'absolute right-[-18px] top-[10px] w-3.5 h-3.5 rounded-full border-2 z-10 transition-colors',
                   done
-                    ? 'bg-primary border-primary'
-                    : 'bg-background border-primary/40'
+                    ? dotDone
+                    : cn('bg-background', dotUndone)
                 )}
               />
 
@@ -89,14 +126,20 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 className={cn("w-full text-right py-2 pr-2", !hasTasks && "cursor-default")}
               >
                 {cp.time && (
-                  <span className="block text-sm font-medium text-primary mb-0.5">
+                  <span className={cn("block text-sm font-medium mb-0.5", theme?.color || 'text-primary')}>
                     {cp.time}
                   </span>
                 )}
-                <span className={cn(
-                  "text-base font-medium text-foreground",
-                  done && "line-through opacity-50"
-                )}>{cp.title_ar}</span>
+                <div className="flex items-center gap-2">
+                  {theme?.icon && (
+                    <img src={theme.icon} alt="" className={cn("w-5 h-5 opacity-70", done && "opacity-30")} />
+                  )}
+                  <span className={cn(
+                    "text-base font-medium",
+                    theme?.color || 'text-foreground',
+                    done && "line-through opacity-50"
+                  )}>{cp.title_ar}</span>
+                </div>
               </button>
 
               {/* Expanded: tasks (sunnahs + main prayer) */}
@@ -127,7 +170,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                 <span
                                   className={cn(
                                     'text-sm font-normal',
-                                    isMainTask && 'text-primary',
+                                    isMainTask && (theme?.color || 'text-primary'),
                                     task.type === 'secondary_task' && 'text-muted-foreground',
                                     task.type === 'regular_task' && 'text-foreground/80',
                                     task.is_done && 'line-through opacity-50'

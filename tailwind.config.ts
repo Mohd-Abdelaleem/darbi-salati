@@ -60,6 +60,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        checkpoint: {
+          fajr: "hsl(var(--checkpoint-fajr))",
+          sunrise: "hsl(var(--checkpoint-sunrise))",
+          dhuhr: "hsl(var(--checkpoint-dhuhr))",
+          asr: "hsl(var(--checkpoint-asr))",
+          maghrib: "hsl(var(--checkpoint-maghrib))",
+          isha: "hsl(var(--checkpoint-isha))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
