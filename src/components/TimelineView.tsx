@@ -20,6 +20,7 @@ const CHECKPOINT_THEME: Record<string, { color: string; Icon: LucideIcon }> = {
   'العصر': { color: 'text-checkpoint-asr', Icon: Sunset },
   'المغرب': { color: 'text-checkpoint-maghrib', Icon: MoonStar },
   'العشاء': { color: 'text-checkpoint-isha', Icon: Moon },
+  'الثلث الأخير من الليل': { color: 'text-checkpoint-isha', Icon: Moon },
 };
 
 const TASK_ICON_MAP: Record<string, string> = {
@@ -167,10 +168,13 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
 
                         return (
                           <div key={task.id} className="relative">
-                            {/* No dot for child tasks — only checkpoints get dots */}
-
-                            <div className="glass rounded-xl px-3 py-2">
-                              <div className="flex items-center gap-3">
+                            <div className="glass rounded-2xl px-4 min-h-[56px] flex flex-col justify-center">
+                              <div className="flex items-center gap-3 py-3">
+                                <Checkbox
+                                  checked={task.is_done}
+                                  onCheckedChange={() => toggleTask(index, task.id)}
+                                  className="h-[22px] w-[22px] shrink-0"
+                                />
                                 <div
                                   className={cn(
                                     "flex-1 text-right flex items-center gap-2",
@@ -200,11 +204,6 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                     {task.title_ar}
                                   </span>
                                 </div>
-                                <Checkbox
-                                  checked={task.is_done}
-                                  onCheckedChange={() => toggleTask(index, task.id)}
-                                  className="h-4 w-4"
-                                />
                               </div>
 
                               {/* Checklist under main prayer */}
@@ -217,7 +216,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                                     className="overflow-hidden"
                                   >
-                                    <div className="pr-6 pt-2 pb-1 flex flex-wrap gap-2">
+                                    <div className="pr-6 pt-1 pb-2 flex flex-wrap gap-2">
                                       {cp.checklist.map(cl => (
                                         <label
                                           key={cl.id}
@@ -232,7 +231,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                           <Checkbox
                                             checked={cl.is_done}
                                             onCheckedChange={() => toggleTask(index, undefined, cl.id)}
-                                            className="h-3 w-3"
+                                            className="h-3.5 w-3.5"
                                           />
                                           <span>{cl.title_ar}</span>
                                         </label>
@@ -260,7 +259,12 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
             <div className="absolute right-0 top-0 bottom-0 w-[2px] timeline-line rounded-full" />
             {/* No timeline dot for standalone tasks */}
             <div className="mr-6">
-              <div className="flex items-center gap-3 py-2.5 px-4 glass rounded-2xl mb-2 glass-hover">
+              <div className="flex items-center gap-3 min-h-[56px] py-3 px-4 glass rounded-2xl mb-2 glass-hover">
+                <Checkbox
+                  checked={task.is_done}
+                  onCheckedChange={() => toggleTask(index)}
+                  className="h-[22px] w-[22px] shrink-0"
+                />
                 <span className={cn(
                   'text-sm font-medium flex-1 text-right',
                   task.type === 'main_task' && 'text-primary',
@@ -270,11 +274,6 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 )}>
                   {task.title_ar}
                 </span>
-                <Checkbox
-                  checked={task.is_done}
-                  onCheckedChange={() => toggleTask(index)}
-                  className="h-5 w-5"
-                />
               </div>
             </div>
           </div>

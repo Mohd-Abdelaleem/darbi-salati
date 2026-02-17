@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { DayData } from '@/types/worship';
 import { generateDefaultDay } from '@/lib/default-day';
-import { calculatePrayerTimes, DEFAULT_COORDS } from '@/lib/prayer-times';
+import { calculatePrayerTimes, calculateLastThirdOfNight, DEFAULT_COORDS } from '@/lib/prayer-times';
 import { getHijriDate } from '@/lib/hijri';
 import { format } from 'date-fns';
 
@@ -23,7 +23,8 @@ function getOrCreateDay(dateStr: string, all: Record<string, DayData>, coords: {
   const date = new Date(dateStr);
   const hijri = getHijriDate(date);
   const prayerTimes = calculatePrayerTimes(date, coords.lat, coords.lon);
-  return generateDefaultDay(dateStr, hijri, prayerTimes);
+  const lastThirdTime = calculateLastThirdOfNight(date, coords.lat, coords.lon);
+  return generateDefaultDay(dateStr, hijri, prayerTimes, lastThirdTime);
 }
 
 export function useDayStore() {
