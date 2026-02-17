@@ -3,6 +3,7 @@ import AppHeader from '@/components/AppHeader';
 import AddTaskPill from '@/components/AddTaskPill';
 import DayNavigation from '@/components/DayNavigation';
 import TimelineView from '@/components/TimelineView';
+import PointsBadge from '@/components/PointsBadge';
 import { useDayStore } from '@/hooks/use-day-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -18,7 +19,9 @@ const Index = () => {
 
       {/* Header area */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/[0.06]">
-        <AppHeader />
+        <AppHeader>
+          <PointsBadge day={currentDay} />
+        </AppHeader>
         <AddTaskPill />
         <DayNavigation
           selectedDate={selectedDate}

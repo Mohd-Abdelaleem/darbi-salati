@@ -1,6 +1,11 @@
 import { Bell } from 'lucide-react';
+import { ReactNode } from 'react';
 
-export default function AppHeader() {
+interface AppHeaderProps {
+  children?: ReactNode;
+}
+
+export default function AppHeader({ children }: AppHeaderProps) {
   return (
     <div className="flex items-center justify-between px-5 pt-5 pb-2" dir="rtl">
       {/* Right: Logo */}
@@ -14,10 +19,13 @@ export default function AppHeader() {
         </div>
       </div>
 
-      {/* Left: Bell icon */}
-      <button className="w-10 h-10 rounded-full glass glass-hover flex items-center justify-center transition-all duration-200">
-        <Bell className="w-5 h-5 text-foreground/70" />
-      </button>
+      {/* Left: Points + Bell */}
+      <div className="flex items-center gap-2">
+        {children}
+        <button className="w-10 h-10 rounded-full glass glass-hover flex items-center justify-center transition-all duration-200">
+          <Bell className="w-5 h-5 text-foreground/70" />
+        </button>
+      </div>
     </div>
   );
 }
