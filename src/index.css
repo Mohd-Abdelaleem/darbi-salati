@@ -37,12 +37,12 @@
     --input: 222 15% 20%;
     --ring: 217 91% 60%;
 
-    --checkpoint-fajr: 160 50% 55%;
-    --checkpoint-sunrise: 38 70% 60%;
-    --checkpoint-dhuhr: 45 65% 55%;
-    --checkpoint-asr: 25 60% 55%;
-    --checkpoint-maghrib: 15 70% 55%;
-    --checkpoint-isha: 230 45% 65%;
+    --checkpoint-fajr: 160 60% 65%;
+    --checkpoint-sunrise: 38 80% 65%;
+    --checkpoint-dhuhr: 45 75% 60%;
+    --checkpoint-asr: 25 70% 60%;
+    --checkpoint-maghrib: 15 80% 60%;
+    --checkpoint-isha: 230 55% 72%;
 
     --radius: 1.25rem;
 

@@ -132,7 +132,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                     <theme.Icon className={cn(
                       "w-4 h-4 transition-opacity duration-200",
                       theme?.color,
-                      done ? "opacity-50" : "opacity-80"
+                      done ? "opacity-60" : "opacity-100"
                     )} />
                   )}
                   <span className={cn(
@@ -184,14 +184,14 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                 >
                                   {isMainTask && (
                                     <img src={mosqueIcon} alt="" className={cn(
-                                      "w-4 h-4 transition-opacity",
-                                      task.is_done ? "opacity-40" : "opacity-70"
+                                      "w-5 h-5 transition-opacity brightness-125",
+                                      task.is_done ? "opacity-50" : "opacity-100"
                                     )} />
                                   )}
                                   {taskIcon && (
                                     <img src={taskIcon} alt="" className={cn(
-                                      "w-4 h-4 transition-opacity",
-                                      task.is_done ? "opacity-40" : "opacity-70"
+                                      "w-5 h-5 transition-opacity brightness-125",
+                                      task.is_done ? "opacity-50" : "opacity-100"
                                     )} />
                                   )}
                                   <span className={cn(
