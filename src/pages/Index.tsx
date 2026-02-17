@@ -1,3 +1,5 @@
+import AppHeader from '@/components/AppHeader';
+import AddTaskPill from '@/components/AddTaskPill';
 import DayNavigation from '@/components/DayNavigation';
 import TimelineView from '@/components/TimelineView';
 import { useDayStore } from '@/hooks/use-day-store';
@@ -12,15 +14,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col max-w-md mx-auto" dir="rtl">
-      {/* Header */}
-      <header className="glass-strong sticky top-0 z-20">
+      {/* Header area — no big panel, clean stacked layout */}
+      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/[0.06]">
+        <AppHeader />
+        <AddTaskPill />
         <DayNavigation
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
           allDays={allDays}
           getDay={getDay}
         />
-      </header>
+      </div>
 
       {/* Points bar */}
       <div className="px-5 py-3 flex items-center gap-3">

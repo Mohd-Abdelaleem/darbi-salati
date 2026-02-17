@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { format, addDays, subDays } from 'date-fns';
 import { getHijriDate } from '@/lib/hijri';
-import { HIJRI_MONTHS, DayData } from '@/types/worship';
+import { DayData } from '@/types/worship';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CalendarDays } from 'lucide-react';
@@ -14,10 +14,19 @@ interface DayNavigationProps {
   getDay: (dateStr: string) => DayData;
 }
 
+const WEEKDAY_SHORT: Record<string, string> = {
+  'الاثنين': 'اث',
+  'الثلاثاء': 'ثل',
+  'الأربعاء': 'أر',
+  'الخميس': 'خم',
+  'الجمعة': 'جم',
+  'السبت': 'سب',
+  'الأحد': 'أح',
+};
+
 export default function DayNavigation({ selectedDate, onSelectDate, allDays, getDay }: DayNavigationProps) {
   const today = new Date();
   const todayStr = format(today, 'yyyy-MM-dd');
-  const hijriToday = getHijriDate(today);
   const todayRef = useRef<HTMLButtonElement>(null);
 
   const days = Array.from({ length: 15 }, (_, i) => {
@@ -40,35 +49,29 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
 
   return (
     <div className="w-full">
-      {/* Hijri month header */}
-      <div className="flex items-center justify-between py-4 px-5">
-        <button
-          onClick={scrollToToday}
-          className={cn(
-            'text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200 flex items-center gap-1.5',
-            selectedDate === todayStr
-              ? 'glass text-muted-foreground'
-              : 'gradient-primary text-white glow-blue'
-          )}
-        >
-          <CalendarDays className="w-3.5 h-3.5" />
-          اليوم
-        </button>
-        <h2 className="text-lg font-bold text-foreground">
-          {HIJRI_MONTHS[hijriToday.month - 1]} {hijriToday.year} هـ
-        </h2>
-      </div>
+      {/* Today button */}
+      {selectedDate !== todayStr && (
+        <div className="flex justify-end px-5 pb-1">
+          <button
+            onClick={scrollToToday}
+            className="text-[10px] font-semibold px-3 py-1 rounded-full gradient-primary text-white glow-blue flex items-center gap-1 transition-all duration-200"
+          >
+            <CalendarDays className="w-3 h-3" />
+            اليوم
+          </button>
+        </div>
+      )}
 
-      {/* Day cards */}
+      {/* Day chips */}
       <ScrollArea className="w-full" dir="rtl">
-        <div className="flex gap-3 px-5 pb-5" dir="rtl">
+        <div className="flex gap-2 px-5 pb-4 pt-1" dir="rtl">
           {days.map(({ dateStr, hijri, date }) => {
             const isSelected = dateStr === selectedDate;
             const isToday = dateStr === todayStr;
-            const dayName = date.toLocaleDateString('ar-EG', { weekday: 'short' });
+            const dayNameFull = date.toLocaleDateString('ar-EG', { weekday: 'long' });
+            const dayShort = WEEKDAY_SHORT[dayNameFull] || dayNameFull.slice(0, 2);
             const dayData = allDays[dateStr];
             const prayerDots = dayData ? getPrayerCompletionStatus(dayData) : [false, false, false, false, false];
-            const points = dayData ? calculateDayPoints(dayData) : 0;
 
             return (
               <button
@@ -76,47 +79,33 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
                 ref={isToday ? todayRef : undefined}
                 onClick={() => onSelectDate(dateStr)}
                 className={cn(
-                  'flex flex-col items-center min-w-[68px] rounded-2xl px-3 py-3.5 transition-all duration-200',
+                  'flex flex-col items-center justify-center w-12 h-16 rounded-2xl transition-all duration-200 shrink-0',
                   isSelected
-                    ? 'gradient-primary text-white glow-blue scale-105'
+                    ? 'gradient-primary text-white glow-blue scale-110'
                     : isToday
                     ? 'glass text-primary'
-                    : 'glass text-foreground/70 glass-hover'
+                    : 'bg-white/[0.04] text-foreground/60 hover:bg-white/[0.07]'
                 )}
               >
                 <span className={cn(
-                  "text-[10px] font-medium",
-                  isSelected ? "text-white/80" : "opacity-60"
-                )}>{dayName}</span>
-                <span className="text-xl font-bold leading-tight">{hijri.day}</span>
-                <span className={cn(
-                  "text-[9px]",
-                  isSelected ? "text-white/60" : "opacity-40"
-                )}>
-                  {date.getDate()}/{date.getMonth() + 1}
-                </span>
+                  "text-[9px] font-medium leading-none",
+                  isSelected ? "text-white/80" : "opacity-50"
+                )}>{dayShort}</span>
+                <span className="text-base font-bold leading-tight mt-0.5">{hijri.day}</span>
                 {/* Prayer dots */}
-                <div className="flex gap-1.5 mt-1.5">
+                <div className="flex gap-[3px] mt-1">
                   {prayerDots.map((done, i) => (
                     <div
                       key={i}
                       className={cn(
-                        'w-1.5 h-1.5 rounded-full transition-all duration-300',
+                        'w-1 h-1 rounded-full transition-all duration-300',
                         done
-                          ? isSelected ? 'bg-white glow-green' : 'bg-success glow-green'
+                          ? isSelected ? 'bg-white' : 'bg-success'
                           : isSelected ? 'bg-white/25' : 'bg-muted-foreground/25'
                       )}
                     />
                   ))}
                 </div>
-                {points > 0 && (
-                  <span className={cn(
-                    'text-[8px] font-bold mt-1',
-                    isSelected ? 'text-white/70' : 'text-primary/60'
-                  )}>
-                    {points}
-                  </span>
-                )}
               </button>
             );
           })}
