@@ -79,7 +79,8 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
                 ref={isToday ? todayRef : undefined}
                 onClick={() => onSelectDate(dateStr)}
                 className={cn(
-                  'flex flex-col items-center justify-center w-12 h-16 rounded-2xl transition-all duration-200 shrink-0',
+                  'flex flex-col items-center justify-center w-12 h-[4.5rem] transition-all duration-200 shrink-0 relative',
+                  'day-card-shape',
                   isSelected
                     ? 'gradient-primary text-white glow-blue scale-110'
                     : isToday

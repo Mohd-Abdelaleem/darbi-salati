@@ -4,17 +4,32 @@ import DayNavigation from '@/components/DayNavigation';
 import TimelineView from '@/components/TimelineView';
 import { useDayStore } from '@/hooks/use-day-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { calculateDayPoints, calculateMaxPoints } from '@/lib/points';
 
 const Index = () => {
   const { currentDay, selectedDate, setSelectedDate, updateDay, allDays, getDay } = useDayStore();
-  const points = calculateDayPoints(currentDay);
-  const maxPoints = calculateMaxPoints(currentDay);
-  const progress = maxPoints > 0 ? (points / maxPoints) * 100 : 0;
 
   return (
-    <div className="min-h-screen flex flex-col max-w-md mx-auto" dir="rtl">
-      {/* Header area — no big panel, clean stacked layout */}
+    <div className="min-h-screen flex flex-col max-w-md mx-auto relative" dir="rtl">
+      {/* Islamic ornament - top right corner */}
+      <div className="fixed top-0 right-0 w-80 h-80 pointer-events-none z-0 opacity-[0.03]">
+        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+          <g stroke="hsl(217 91% 60%)" strokeWidth="0.5">
+            {/* 8-point star pattern */}
+            <polygon points="200,40 230,170 360,170 250,240 280,370 200,280 120,370 150,240 40,170 170,170" />
+            <polygon points="200,80 220,170 320,170 240,220 260,320 200,260 140,320 160,220 80,170 180,170" />
+            <polygon points="200,120 210,170 280,170 230,200 240,270 200,240 160,270 170,200 120,170 190,170" />
+            {/* Interlaced lines */}
+            <line x1="100" y1="100" x2="300" y2="300" />
+            <line x1="300" y1="100" x2="100" y2="300" />
+            <line x1="200" y1="50" x2="200" y2="350" />
+            <line x1="50" y1="200" x2="350" y2="200" />
+            <circle cx="200" cy="200" r="120" />
+            <circle cx="200" cy="200" r="80" />
+          </g>
+        </svg>
+      </div>
+
+      {/* Header area */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/[0.06]">
         <AppHeader />
         <AddTaskPill />
@@ -24,20 +39,6 @@ const Index = () => {
           allDays={allDays}
           getDay={getDay}
         />
-      </div>
-
-      {/* Points bar */}
-      <div className="px-5 py-3 flex items-center gap-3">
-        <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
-          <div
-            className="h-full rounded-full gradient-primary transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-primary">{points}</span>
-          <span className="text-xs text-muted-foreground">/ {maxPoints}</span>
-        </div>
       </div>
 
       {/* Timeline */}
