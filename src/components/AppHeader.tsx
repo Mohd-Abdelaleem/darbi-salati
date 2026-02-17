@@ -1,6 +1,7 @@
 import { Bell } from 'lucide-react';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useTheme } from '@/hooks/use-theme';
 import logoWhite from '@/assets/logo-white.png';
@@ -17,7 +18,18 @@ export default function AppHeader({ children }: AppHeaderProps) {
     <div className="flex items-center justify-between px-5 pt-5 pb-2" dir="rtl">
       {/* Right: Logo */}
       <Link to="/" className="flex items-center gap-3">
-        <img src={theme === 'dark' ? logoWhite : logoGradient} alt="أدومها" className="h-10 w-auto object-contain" />
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={theme}
+            src={theme === 'dark' ? logoWhite : logoGradient}
+            alt="أدومها"
+            className="h-10 w-auto object-contain"
+            initial={{ opacity: 0, scale: 0.85, rotate: -8 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.85, rotate: 8 }}
+            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+          />
+        </AnimatePresence>
       </Link>
 
       {/* Left: Points + Theme + Bell */}
