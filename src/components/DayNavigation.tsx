@@ -20,7 +20,6 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
   const hijriToday = getHijriDate(today);
   const todayRef = useRef<HTMLButtonElement>(null);
 
-  // Generate 15 days around today
   const days = Array.from({ length: 15 }, (_, i) => {
     const d = addDays(subDays(today, 7), i);
     const dateStr = format(d, 'yyyy-MM-dd');
@@ -35,7 +34,6 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
     }, 50);
   };
 
-  // Scroll to today on mount
   useEffect(() => {
     todayRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
   }, []);
@@ -43,14 +41,14 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
   return (
     <div className="w-full">
       {/* Hijri month header */}
-      <div className="flex items-center justify-between py-3 px-4">
+      <div className="flex items-center justify-between py-4 px-5">
         <button
           onClick={scrollToToday}
           className={cn(
-            'text-xs font-medium px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5',
+            'text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200 flex items-center gap-1.5',
             selectedDate === todayStr
-              ? 'bg-muted text-muted-foreground'
-              : 'bg-primary text-primary-foreground shadow-sm'
+              ? 'glass text-muted-foreground'
+              : 'gradient-primary text-white glow-blue'
           )}
         >
           <CalendarDays className="w-3.5 h-3.5" />
@@ -63,7 +61,7 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
 
       {/* Day cards */}
       <ScrollArea className="w-full" dir="rtl">
-        <div className="flex gap-3 px-4 pb-4" dir="rtl">
+        <div className="flex gap-3 px-5 pb-5" dir="rtl">
           {days.map(({ dateStr, hijri, date }) => {
             const isSelected = dateStr === selectedDate;
             const isToday = dateStr === todayStr;
@@ -78,38 +76,43 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
                 ref={isToday ? todayRef : undefined}
                 onClick={() => onSelectDate(dateStr)}
                 className={cn(
-                  'flex flex-col items-center min-w-[64px] rounded-xl px-3 py-3 transition-all duration-200',
+                  'flex flex-col items-center min-w-[68px] rounded-2xl px-3 py-3.5 transition-all duration-200',
                   isSelected
-                    ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                    ? 'gradient-primary text-white glow-blue scale-105'
                     : isToday
-                    ? 'bg-primary/10 text-primary'
-                    : 'bg-card text-foreground hover:bg-secondary'
+                    ? 'glass text-primary'
+                    : 'glass text-foreground/70 glass-hover'
                 )}
               >
-                <span className="text-[10px] font-medium opacity-80">{dayName}</span>
-                <span className="text-lg font-bold leading-tight">{hijri.day}</span>
-                <span className="text-[9px] opacity-60">
+                <span className={cn(
+                  "text-[10px] font-medium",
+                  isSelected ? "text-white/80" : "opacity-60"
+                )}>{dayName}</span>
+                <span className="text-xl font-bold leading-tight">{hijri.day}</span>
+                <span className={cn(
+                  "text-[9px]",
+                  isSelected ? "text-white/60" : "opacity-40"
+                )}>
                   {date.getDate()}/{date.getMonth() + 1}
                 </span>
                 {/* Prayer dots */}
-                <div className="flex gap-1 mt-1">
+                <div className="flex gap-1.5 mt-1.5">
                   {prayerDots.map((done, i) => (
                     <div
                       key={i}
                       className={cn(
-                        'w-1.5 h-1.5 rounded-full transition-colors',
+                        'w-1.5 h-1.5 rounded-full transition-all duration-300',
                         done
-                          ? isSelected ? 'bg-primary-foreground' : 'bg-primary'
-                          : isSelected ? 'bg-primary-foreground/30' : 'bg-muted-foreground/30'
+                          ? isSelected ? 'bg-white glow-green' : 'bg-success glow-green'
+                          : isSelected ? 'bg-white/25' : 'bg-muted-foreground/25'
                       )}
                     />
                   ))}
                 </div>
-                {/* Points */}
                 {points > 0 && (
                   <span className={cn(
-                    'text-[8px] font-bold mt-0.5',
-                    isSelected ? 'text-primary-foreground/80' : 'text-primary/70'
+                    'text-[8px] font-bold mt-1',
+                    isSelected ? 'text-white/70' : 'text-primary/60'
                   )}>
                     {points}
                   </span>

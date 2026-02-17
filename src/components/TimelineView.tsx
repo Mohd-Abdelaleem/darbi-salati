@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayData, TimelineItem, Checkpoint, StandaloneTask } from '@/types/worship';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Sunrise, Sun, SunDim, Sunset, Moon, MoonStar, type LucideIcon } from 'lucide-react';
 import mosqueIcon from '@/assets/mosque-icon.png';
@@ -21,15 +20,6 @@ const CHECKPOINT_THEME: Record<string, { color: string; Icon: LucideIcon }> = {
   'العصر': { color: 'text-checkpoint-asr', Icon: Sunset },
   'المغرب': { color: 'text-checkpoint-maghrib', Icon: MoonStar },
   'العشاء': { color: 'text-checkpoint-isha', Icon: Moon },
-};
-
-const CHECKPOINT_BORDER_RIGHT: Record<string, string> = {
-  'الفجر': 'border-r-checkpoint-fajr',
-  'الشروق': 'border-r-checkpoint-sunrise',
-  'الظهر': 'border-r-checkpoint-dhuhr',
-  'العصر': 'border-r-checkpoint-asr',
-  'المغرب': 'border-r-checkpoint-maghrib',
-  'العشاء': 'border-r-checkpoint-isha',
 };
 
 const TASK_ICON_MAP: Record<string, string> = {
@@ -99,57 +89,72 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           const done = isCheckpointDone(cp);
           const hasTasks = cp.tasks.length > 0;
           const theme = CHECKPOINT_THEME[cp.title_ar];
-          const borderRight = CHECKPOINT_BORDER_RIGHT[cp.title_ar] || 'border-r-primary/20';
 
           return (
-            <div key={id}>
-              <div
-                className={cn(
-                  "relative border-r-2 pr-3",
-                  borderRight
-                )}
-              >
-                {/* Checkpoint header */}
+            <div key={id} className="relative">
+              {/* Glowing timeline line */}
+              <div className="absolute right-0 top-0 bottom-0 w-[2px] timeline-line rounded-full" />
+              
+              {/* Timeline dot */}
+              <div className={cn(
+                "absolute right-[-5px] top-5 w-3 h-3 rounded-full border-2 transition-all duration-300 z-10",
+                done
+                  ? "bg-success border-success glow-green"
+                  : isExpanded
+                  ? "bg-primary border-primary glow-blue"
+                  : "bg-muted-foreground/30 border-muted-foreground/30"
+              )} />
+
+              <div className="mr-4">
+                {/* Checkpoint card */}
                 <button
                   onClick={() => hasTasks && toggleExpand(id)}
-                  className={cn("w-full text-right py-2 transition-all duration-200 hover:bg-muted/50 active:scale-[0.99]", !hasTasks && "cursor-default")}
+                  className={cn(
+                    "w-full text-right py-3 px-4 rounded-2xl transition-all duration-250 mb-2",
+                    isExpanded ? "glass-strong" : "glass glass-hover",
+                    !hasTasks && "cursor-default"
+                  )}
                 >
                   {cp.time && (
-                    <span className={cn("block text-sm font-medium mb-0.5", theme?.color || 'text-primary')}>
+                    <span className={cn("block text-xs font-medium mb-1 opacity-70", theme?.color || 'text-primary')}>
                       {cp.time}
                     </span>
                   )}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     {theme?.Icon && (
-                      <theme.Icon className={cn("w-5 h-5 opacity-70", theme?.color, done && "opacity-30")} />
+                      <theme.Icon className={cn(
+                        "w-5 h-5 transition-opacity duration-200",
+                        theme?.color,
+                        done ? "opacity-40" : "opacity-80"
+                      )} />
                     )}
                     <span className={cn(
-                      "text-base font-medium",
+                      "text-base font-semibold",
                       theme?.color || 'text-foreground',
                       done && "opacity-50"
                     )}>{cp.title_ar}</span>
                   </div>
                 </button>
 
-                {/* Expanded: tasks */}
+                {/* Expanded tasks */}
                 <AnimatePresence>
                   {isExpanded && hasTasks && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      transition={{ duration: 0.25, ease: 'easeOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="pr-8 pb-3 space-y-1">
+                      <div className="pr-4 pb-3 space-y-1.5">
                         {cp.tasks.map(task => {
                           const isMainTask = task.type === 'main_task';
                           const isPrayerExpanded = expandedPrayerId === task.id;
                           const taskIcon = TASK_ICON_MAP[task.title_ar];
 
                           return (
-                            <div key={task.id}>
-                              <div className="flex items-center gap-3 py-1.5">
+                            <div key={task.id} className="glass rounded-xl px-3 py-2">
+                              <div className="flex items-center gap-3">
                                 <div
                                   className={cn(
                                     "flex-1 text-right flex items-center gap-2",
@@ -158,20 +163,24 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                   onClick={isMainTask ? (e) => togglePrayerExpand(task.id, e) : undefined}
                                 >
                                   {isMainTask && (
-                                    <img src={mosqueIcon} alt="" className={cn("w-4 h-4 opacity-60")} />
+                                    <img src={mosqueIcon} alt="" className={cn(
+                                      "w-4 h-4 transition-opacity",
+                                      task.is_done ? "opacity-40" : "opacity-70"
+                                    )} />
                                   )}
                                   {taskIcon && (
-                                    <img src={taskIcon} alt="" className="w-4 h-4 opacity-60" />
+                                    <img src={taskIcon} alt="" className={cn(
+                                      "w-4 h-4 transition-opacity",
+                                      task.is_done ? "opacity-40" : "opacity-70"
+                                    )} />
                                   )}
-                                  <span
-                                    className={cn(
-                                      'text-sm font-normal',
-                                      isMainTask && (theme?.color || 'text-primary'),
-                                      task.type === 'secondary_task' && 'text-muted-foreground',
-                                      task.type === 'regular_task' && 'text-foreground/80',
-                                      task.is_done && 'opacity-50'
-                                    )}
-                                  >
+                                  <span className={cn(
+                                    'text-sm font-medium',
+                                    isMainTask && (theme?.color || 'text-primary'),
+                                    task.type === 'secondary_task' && 'text-muted-foreground',
+                                    task.type === 'regular_task' && 'text-foreground/80',
+                                    task.is_done && 'opacity-50'
+                                  )}>
                                     {task.title_ar}
                                   </span>
                                 </div>
@@ -182,7 +191,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                 />
                               </div>
 
-                              {/* Checklist under main prayer - inline row */}
+                              {/* Checklist under main prayer */}
                               <AnimatePresence>
                                 {isMainTask && isPrayerExpanded && (
                                   <motion.div
@@ -192,16 +201,16 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                                     className="overflow-hidden"
                                   >
-                                    <div className="pr-6 pb-2 flex flex-wrap gap-3">
+                                    <div className="pr-6 pt-2 pb-1 flex flex-wrap gap-2">
                                       {cp.checklist.map(cl => (
                                         <label
                                           key={cl.id}
                                           className={cn(
-                                            'text-xs px-3 py-1.5 border transition-all duration-200 cursor-pointer flex items-center gap-1.5 select-none',
-                                            'hover:shadow-sm hover:scale-105 active:scale-95',
+                                            'text-xs px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 select-none',
+                                            'hover:scale-105 active:scale-95',
                                             cl.is_done
-                                              ? 'bg-primary/15 border-primary/40 text-primary'
-                                              : 'bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:border-primary/20'
+                                              ? 'bg-success/20 text-success glow-green'
+                                              : 'glass text-foreground/60 glass-hover'
                                           )}
                                         >
                                           <Checkbox
@@ -225,8 +234,8 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 </AnimatePresence>
               </div>
 
-              {/* Separator after checkpoint */}
-              <Separator className="my-2" />
+              {/* Subtle divider */}
+              <div className="h-px bg-gradient-to-l from-transparent via-white/5 to-transparent my-1" />
             </div>
           );
         }
@@ -234,24 +243,31 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
         // Standalone task
         const task = item.data as StandaloneTask;
         return (
-          <div key={id} className="relative border-r-2 border-r-primary/20 pr-3">
-            <div className="flex items-center gap-3 py-2.5">
-              <span
-                className={cn(
-                  'text-sm font-normal flex-1 text-right',
+          <div key={id} className="relative">
+            <div className="absolute right-0 top-0 bottom-0 w-[2px] timeline-line rounded-full" />
+            <div className={cn(
+              "absolute right-[-5px] top-4 w-3 h-3 rounded-full border-2 transition-all duration-300 z-10",
+              task.is_done
+                ? "bg-success border-success glow-green"
+                : "bg-muted-foreground/30 border-muted-foreground/30"
+            )} />
+            <div className="mr-4">
+              <div className="flex items-center gap-3 py-2.5 px-4 glass rounded-2xl mb-2 glass-hover">
+                <span className={cn(
+                  'text-sm font-medium flex-1 text-right',
                   task.type === 'main_task' && 'text-primary',
                   task.type === 'secondary_task' && 'text-muted-foreground',
                   task.type === 'regular_task' && 'text-foreground/80',
                   task.is_done && 'opacity-50'
-                )}
-              >
-                {task.title_ar}
-              </span>
-              <Checkbox
-                checked={task.is_done}
-                onCheckedChange={() => toggleTask(index)}
-                className="h-5 w-5"
-              />
+                )}>
+                  {task.title_ar}
+                </span>
+                <Checkbox
+                  checked={task.is_done}
+                  onCheckedChange={() => toggleTask(index)}
+                  className="h-5 w-5"
+                />
+              </div>
             </div>
           </div>
         );
