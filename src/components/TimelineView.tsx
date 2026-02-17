@@ -94,10 +94,10 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
             <div key={id} className="relative">
               {/* Glowing timeline line */}
               <div className="absolute right-0 top-0 bottom-0 w-[2px] timeline-line rounded-full" />
-              
-              {/* Timeline dot */}
+
+              {/* Timeline dot on the line */}
               <div className={cn(
-                "absolute right-[-5px] top-5 w-3 h-3 rounded-full border-2 transition-all duration-300 z-10",
+                "absolute right-[-5px] top-[18px] w-3 h-3 rounded-full border-2 transition-all duration-300 z-10",
                 done
                   ? "bg-success border-success glow-green"
                   : isExpanded
@@ -105,55 +105,74 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                   : "bg-muted-foreground/30 border-muted-foreground/30"
               )} />
 
-              <div className="mr-4">
-                {/* Checkpoint card */}
-                <button
-                  onClick={() => hasTasks && toggleExpand(id)}
-                  className={cn(
-                    "w-full text-right py-3 px-4 rounded-2xl transition-all duration-250 mb-2",
-                    isExpanded ? "glass-strong" : "glass glass-hover",
-                    !hasTasks && "cursor-default"
+              {/* Separator line + floating pill */}
+              <button
+                onClick={() => hasTasks && toggleExpand(id)}
+                className={cn(
+                  "relative w-full flex items-center py-3 mr-4",
+                  hasTasks ? "cursor-pointer" : "cursor-default"
+                )}
+              >
+                {/* Horizontal separator line */}
+                <div className="absolute left-0 right-4 top-1/2 h-px bg-gradient-to-l from-white/10 via-white/6 to-transparent" />
+
+                {/* Floating pill label */}
+                <div className={cn(
+                  "relative z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full",
+                  "bg-white/[0.06] backdrop-blur-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
+                  "transition-all duration-200",
+                  hasTasks && "hover:bg-white/[0.1] hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
+                  done && "opacity-60"
+                )}>
+                  {theme?.Icon && (
+                    <theme.Icon className={cn(
+                      "w-4 h-4 transition-opacity duration-200",
+                      theme?.color,
+                      done ? "opacity-50" : "opacity-80"
+                    )} />
                   )}
-                >
+                  <span className={cn(
+                    "text-sm font-semibold",
+                    theme?.color || 'text-foreground'
+                  )}>{cp.title_ar}</span>
                   {cp.time && (
-                    <span className={cn("block text-xs font-medium mb-1 opacity-70", theme?.color || 'text-primary')}>
+                    <span className={cn(
+                      "text-[11px] font-medium opacity-60 tabular-nums",
+                      theme?.color || 'text-muted-foreground'
+                    )}>
                       {cp.time}
                     </span>
                   )}
-                  <div className="flex items-center gap-2.5">
-                    {theme?.Icon && (
-                      <theme.Icon className={cn(
-                        "w-5 h-5 transition-opacity duration-200",
-                        theme?.color,
-                        done ? "opacity-40" : "opacity-80"
-                      )} />
-                    )}
-                    <span className={cn(
-                      "text-base font-semibold",
-                      theme?.color || 'text-foreground',
-                      done && "opacity-50"
-                    )}>{cp.title_ar}</span>
-                  </div>
-                </button>
+                </div>
+              </button>
 
-                {/* Expanded tasks */}
-                <AnimatePresence>
-                  {isExpanded && hasTasks && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: 'easeOut' }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pr-4 pb-3 space-y-1.5">
-                        {cp.tasks.map(task => {
-                          const isMainTask = task.type === 'main_task';
-                          const isPrayerExpanded = expandedPrayerId === task.id;
-                          const taskIcon = TASK_ICON_MAP[task.title_ar];
+              {/* Expanded children tasks */}
+              <AnimatePresence>
+                {isExpanded && hasTasks && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mr-6 pb-3 space-y-1.5">
+                      {cp.tasks.map(task => {
+                        const isMainTask = task.type === 'main_task';
+                        const isPrayerExpanded = expandedPrayerId === task.id;
+                        const taskIcon = TASK_ICON_MAP[task.title_ar];
 
-                          return (
-                            <div key={task.id} className="glass rounded-xl px-3 py-2">
+                        return (
+                          <div key={task.id} className="relative">
+                            {/* Child dot on the timeline */}
+                            <div className={cn(
+                              "absolute right-[-22px] top-3 w-2 h-2 rounded-full transition-all duration-300 z-10",
+                              task.is_done
+                                ? "bg-success/70"
+                                : "bg-muted-foreground/20"
+                            )} />
+
+                            <div className="glass rounded-xl px-3 py-2">
                               <div className="flex items-center gap-3">
                                 <div
                                   className={cn(
@@ -226,16 +245,13 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                 )}
                               </AnimatePresence>
                             </div>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Subtle divider */}
-              <div className="h-px bg-gradient-to-l from-transparent via-white/5 to-transparent my-1" />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         }
