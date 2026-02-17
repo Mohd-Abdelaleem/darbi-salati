@@ -1,6 +1,7 @@
 import { Bell } from 'lucide-react';
 import { ReactNode } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
+import logo from '@/assets/logo.jpeg';
 
 interface AppHeaderProps {
   children?: ReactNode;
@@ -11,13 +12,7 @@ export default function AppHeader({ children }: AppHeaderProps) {
     <div className="flex items-center justify-between px-5 pt-5 pb-2" dir="rtl">
       {/* Right: Logo */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full gradient-primary glow-blue flex items-center justify-center">
-          <span className="text-base font-bold text-white">أ</span>
-        </div>
-        <div>
-          <h1 className="text-lg font-bold text-foreground leading-tight">أدومها</h1>
-          <span className="text-xs text-muted-foreground">صباح الخير</span>
-        </div>
+        <img src={logo} alt="أدومها" className="h-10 w-auto rounded-lg object-contain" />
       </div>
 
       {/* Left: Points + Theme + Bell */}
