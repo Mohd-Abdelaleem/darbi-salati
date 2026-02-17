@@ -18,7 +18,7 @@ const Index = () => {
       </div>
 
       {/* Header area */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-20 backdrop-blur-xl border-b border-white/[0.06] bg-[#0b111e]/0">
         <AppHeader>
           <PointsBadge day={currentDay} />
         </AppHeader>
@@ -27,8 +27,8 @@ const Index = () => {
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
           allDays={allDays}
-          getDay={getDay}
-        />
+          getDay={getDay} />
+
       </div>
 
       {/* Timeline */}
@@ -37,8 +37,8 @@ const Index = () => {
           <TimelineView day={currentDay} onUpdate={updateDay} />
         </div>
       </ScrollArea>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
