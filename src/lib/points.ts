@@ -19,23 +19,28 @@ export function calculateDayPoints(day: DayData): number {
   for (const item of day.timeline) {
     if (item.kind === 'checkpoint') {
       const cp = item.data as Checkpoint;
-      if (!PRAYER_CHECKPOINTS.includes(cp.title_ar)) continue;
+      if (PRAYER_CHECKPOINTS.includes(cp.title_ar)) {
+        // Main prayer task = 4 points
+        const mainTask = cp.tasks.find(t => t.type === 'main_task');
+        if (mainTask?.is_done) points += 4;
 
-      // Main prayer task = 4 points
-      const mainTask = cp.tasks.find(t => t.type === 'main_task');
-      if (mainTask?.is_done) points += 4;
+        // Checklist: جماعة=3, في الوقت=3, أذكار الصلاة=2
+        for (const cl of cp.checklist) {
+          if (!cl.is_done) continue;
+          if (cl.title_ar === 'جماعة') points += 3;
+          else if (cl.title_ar === 'في الوقت') points += 3;
+          else if (cl.title_ar === 'أذكار الصلاة') points += 2;
+        }
 
-      // Checklist: جماعة=3, في الوقت=3, أذكار الصلاة=2
-      for (const cl of cp.checklist) {
-        if (!cl.is_done) continue;
-        if (cl.title_ar === 'جماعة') points += 3;
-        else if (cl.title_ar === 'في الوقت') points += 3;
-        else if (cl.title_ar === 'أذكار الصلاة') points += 2;
-      }
-
-      // Other tasks in checkpoint (sunnahs etc) = 5 each
-      for (const task of cp.tasks) {
-        if (task.type !== 'main_task' && task.is_done) points += 5;
+        // Other tasks in checkpoint (sunnahs etc) = 5 each
+        for (const task of cp.tasks) {
+          if (task.type !== 'main_task' && task.is_done) points += 5;
+        }
+      } else {
+        // Non-prayer checkpoints (e.g. الثلث الأخير) — tasks = 5 each
+        for (const task of cp.tasks) {
+          if (task.is_done) points += 5;
+        }
       }
     } else {
       // Standalone tasks = 5 each
@@ -52,10 +57,13 @@ export function calculateMaxPoints(day: DayData): number {
   for (const item of day.timeline) {
     if (item.kind === 'checkpoint') {
       const cp = item.data as Checkpoint;
-      if (!PRAYER_CHECKPOINTS.includes(cp.title_ar)) continue;
-      max += 12; // 4 + 3 + 3 + 2
-      // Other tasks in checkpoint
-      max += cp.tasks.filter(t => t.type !== 'main_task').length * 5;
+      if (PRAYER_CHECKPOINTS.includes(cp.title_ar)) {
+        max += 12; // 4 + 3 + 3 + 2
+        max += cp.tasks.filter(t => t.type !== 'main_task').length * 5;
+      } else {
+        // Non-prayer checkpoint tasks
+        max += cp.tasks.length * 5;
+      }
     } else {
       max += 5;
     }

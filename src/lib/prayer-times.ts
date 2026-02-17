@@ -20,5 +20,27 @@ export function calculatePrayerTimes(date: Date, lat: number, lon: number): Pray
   };
 }
 
+/**
+ * Calculate the start of the last third of the night.
+ * Night = Maghrib(today) → Fajr(tomorrow)
+ * LastThirdStart = Fajr(tomorrow) - NightDuration / 3
+ */
+export function calculateLastThirdOfNight(date: Date, lat: number, lon: number): string {
+  const coords = new Coordinates(lat, lon);
+  const params = CalculationMethod.UmmAlQura();
+
+  const today = new AdhanPrayerTimes(coords, date, params);
+  const tomorrow = new Date(date);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const nextDay = new AdhanPrayerTimes(coords, tomorrow, params);
+
+  const maghribMs = today.maghrib.getTime();
+  const fajrNextMs = nextDay.fajr.getTime();
+  const nightDuration = fajrNextMs - maghribMs;
+  const lastThirdStart = new Date(fajrNextMs - nightDuration / 3);
+
+  return fmt(lastThirdStart);
+}
+
 // Default: Mecca
 export const DEFAULT_COORDS = { lat: 21.4225, lon: 39.8262 };
