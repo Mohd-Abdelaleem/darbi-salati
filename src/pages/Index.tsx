@@ -8,11 +8,12 @@ const Index = () => {
   const { currentDay, selectedDate, setSelectedDate, updateDay, allDays, getDay } = useDayStore();
   const points = calculateDayPoints(currentDay);
   const maxPoints = calculateMaxPoints(currentDay);
+  const progress = maxPoints > 0 ? (points / maxPoints) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col max-w-md mx-auto" dir="rtl">
+    <div className="min-h-screen flex flex-col max-w-md mx-auto" dir="rtl">
       {/* Header */}
-      <header className="bg-card border-b border-border shadow-sm sticky top-0 z-20">
+      <header className="glass-strong sticky top-0 z-20 rounded-b-3xl">
         <DayNavigation
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
@@ -21,15 +22,23 @@ const Index = () => {
         />
       </header>
 
-      {/* Points counter */}
-      <div className="px-4 py-2 bg-card border-b border-border flex items-center justify-between">
-        <span className="text-sm font-bold text-primary">{points} / {maxPoints}</span>
-        <span className="text-xs text-muted-foreground">نقاط اليوم</span>
+      {/* Points bar */}
+      <div className="px-5 py-3 flex items-center gap-3">
+        <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+          <div
+            className="h-full rounded-full gradient-primary transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-primary">{points}</span>
+          <span className="text-xs text-muted-foreground">/ {maxPoints}</span>
+        </div>
       </div>
 
       {/* Timeline */}
       <ScrollArea className="flex-1">
-        <div className="pt-4">
+        <div className="pt-2">
           <TimelineView day={currentDay} onUpdate={updateDay} />
         </div>
       </ScrollArea>

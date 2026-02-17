@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,97 +6,61 @@
 
 @layer base {
   :root {
-    --background: 30 25% 97%;
-    --foreground: 0 10% 15%;
+    --background: 222 47% 8%;
+    --foreground: 210 20% 92%;
 
-    --card: 30 20% 99%;
-    --card-foreground: 0 10% 15%;
+    --card: 222 30% 12%;
+    --card-foreground: 210 20% 92%;
 
-    --popover: 30 20% 99%;
-    --popover-foreground: 0 10% 15%;
+    --popover: 222 30% 12%;
+    --popover-foreground: 210 20% 92%;
 
-    --primary: 350 55% 38%;
-    --primary-foreground: 30 25% 97%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 30 15% 92%;
-    --secondary-foreground: 0 10% 25%;
+    --secondary: 222 20% 16%;
+    --secondary-foreground: 210 15% 75%;
 
-    --muted: 30 10% 94%;
-    --muted-foreground: 0 5% 50%;
+    --muted: 222 15% 18%;
+    --muted-foreground: 215 10% 55%;
 
-    --accent: 38 60% 55%;
-    --accent-foreground: 0 10% 15%;
+    --accent: 263 70% 58%;
+    --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
-    --ring: 350 55% 38%;
+    --success: 142 71% 45%;
+    --success-foreground: 210 20% 98%;
 
-    --checkpoint-fajr: 160 45% 40%;
-    --checkpoint-sunrise: 38 70% 55%;
-    --checkpoint-dhuhr: 45 65% 50%;
-    --checkpoint-asr: 25 60% 50%;
-    --checkpoint-maghrib: 15 70% 50%;
-    --checkpoint-isha: 230 40% 45%;
+    --border: 222 15% 18%;
+    --input: 222 15% 20%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.75rem;
+    --checkpoint-fajr: 160 50% 55%;
+    --checkpoint-sunrise: 38 70% 60%;
+    --checkpoint-dhuhr: 45 65% 55%;
+    --checkpoint-asr: 25 60% 55%;
+    --checkpoint-maghrib: 15 70% 55%;
+    --checkpoint-isha: 230 45% 65%;
 
-    --sidebar-background: 30 20% 96%;
-    --sidebar-foreground: 0 10% 25%;
-    --sidebar-primary: 350 55% 38%;
-    --sidebar-primary-foreground: 30 25% 97%;
-    --sidebar-accent: 30 15% 92%;
-    --sidebar-accent-foreground: 0 10% 25%;
-    --sidebar-border: 30 15% 88%;
-    --sidebar-ring: 350 55% 38%;
-  }
+    --radius: 1.25rem;
 
-  .dark {
-    --background: 0 10% 8%;
-    --foreground: 30 15% 92%;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-bg-hover: rgba(255, 255, 255, 0.08);
+    --glass-bg-active: rgba(255, 255, 255, 0.12);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --glass-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
 
-    --card: 0 10% 10%;
-    --card-foreground: 30 15% 92%;
-
-    --popover: 0 10% 10%;
-    --popover-foreground: 30 15% 92%;
-
-    --primary: 350 50% 50%;
-    --primary-foreground: 30 25% 97%;
-
-    --secondary: 0 8% 18%;
-    --secondary-foreground: 30 15% 85%;
-
-    --muted: 0 8% 18%;
-    --muted-foreground: 30 10% 55%;
-
-    --accent: 38 50% 45%;
-    --accent-foreground: 30 25% 97%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 0 8% 20%;
-    --input: 0 8% 20%;
-    --ring: 350 50% 50%;
-
-    --checkpoint-fajr: 160 40% 50%;
-    --checkpoint-sunrise: 38 60% 50%;
-    --checkpoint-dhuhr: 45 55% 55%;
-    --checkpoint-asr: 25 50% 55%;
-    --checkpoint-maghrib: 15 60% 55%;
-    --checkpoint-isha: 230 35% 55%;
-
-    --sidebar-background: 0 10% 8%;
-    --sidebar-foreground: 30 15% 85%;
-    --sidebar-primary: 350 50% 50%;
-    --sidebar-primary-foreground: 30 25% 97%;
-    --sidebar-accent: 0 8% 18%;
-    --sidebar-accent-foreground: 30 15% 85%;
-    --sidebar-border: 0 8% 20%;
-    --sidebar-ring: 350 50% 50%;
+    --sidebar-background: 222 30% 10%;
+    --sidebar-foreground: 210 15% 85%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 210 20% 98%;
+    --sidebar-accent: 222 20% 16%;
+    --sidebar-accent-foreground: 210 15% 85%;
+    --sidebar-border: 222 15% 18%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
@@ -106,8 +70,76 @@
   }
 
   body {
-    @apply bg-background text-foreground font-tajawal;
+    @apply bg-background text-foreground font-cairo;
     direction: rtl;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.04'%3E%3Cpath d='M30 0L30 10M30 50L30 60M0 30L10 30M50 30L60 30M30 25a5 5 0 110 10 5 5 0 010-10zM15 15l5 5M40 40l5 5M15 45l5-5M40 20l5-5'/%3E%3Cpath d='M30 15l4.33 2.5v5L30 25l-4.33-2.5v-5L30 15zM30 35l4.33 2.5v5L30 45l-4.33-2.5v-5L30 35zM10 25l4.33 2.5v5L10 35l-4.33-2.5v-5L10 25zM50 25l4.33 2.5v5L50 35l-4.33-2.5v-5L50 25z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background: linear-gradient(180deg, #0B1220 0%, #020617 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-hover:hover {
+    background: var(--glass-bg-hover);
+  }
+
+  .glass-active {
+    background: var(--glass-bg-active);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: var(--glass-shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+  }
+
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+
+  .timeline-line {
+    background: linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3), 0 0 16px rgba(139, 92, 246, 0.15);
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  }
+
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.2); }
+  }
+
+  .animate-breathe {
+    animation: breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+
+  .animate-pulse-green {
+    animation: pulse-green 0.6s ease-out;
   }
 }
