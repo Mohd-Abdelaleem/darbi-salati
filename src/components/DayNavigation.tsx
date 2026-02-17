@@ -63,7 +63,7 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
 
       {/* Day cards */}
       <ScrollArea className="w-full" dir="rtl">
-        <div className="flex gap-2 px-4 pb-3" dir="rtl">
+        <div className="flex gap-3 px-4 pb-4" dir="rtl">
           {days.map(({ dateStr, hijri, date }) => {
             const isSelected = dateStr === selectedDate;
             const isToday = dateStr === todayStr;
@@ -78,7 +78,7 @@ export default function DayNavigation({ selectedDate, onSelectDate, allDays, get
                 ref={isToday ? todayRef : undefined}
                 onClick={() => onSelectDate(dateStr)}
                 className={cn(
-                  'flex flex-col items-center min-w-[60px] rounded-xl px-3 py-2 transition-all duration-200',
+                  'flex flex-col items-center min-w-[64px] rounded-xl px-3 py-3 transition-all duration-200',
                   isSelected
                     ? 'bg-primary text-primary-foreground shadow-md scale-105'
                     : isToday
