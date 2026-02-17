@@ -13,7 +13,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col max-w-md mx-auto" dir="rtl">
       {/* Header */}
-      <header className="glass-strong sticky top-0 z-20 rounded-b-3xl">
+      <header className="glass-strong sticky top-0 z-20">
         <DayNavigation
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}

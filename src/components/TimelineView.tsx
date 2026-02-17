@@ -28,16 +28,19 @@ const TASK_ICON_MAP: Record<string, string> = {
 };
 
 export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
   const [expandedPrayerId, setExpandedPrayerId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
-    setExpandedId(prev => {
-      if (prev === id) {
+    setCollapsedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
         setExpandedPrayerId(null);
-        return null;
       }
-      return id;
+      return next;
     });
   };
 
@@ -82,20 +85,20 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
     <div className="relative pr-6 pl-4 pb-20" dir="rtl">
       {day.timeline.map((item, index) => {
         const id = item.data.id;
-        const isExpanded = expandedId === id;
 
         if (item.kind === 'checkpoint') {
           const cp = item.data as Checkpoint;
           const done = isCheckpointDone(cp);
           const hasTasks = cp.tasks.length > 0;
           const theme = CHECKPOINT_THEME[cp.title_ar];
+          const isExpanded = !collapsedIds.has(id);
 
           return (
             <div key={id} className="relative">
               {/* Glowing timeline line */}
               <div className="absolute right-0 top-0 bottom-0 w-[2px] timeline-line rounded-full" />
 
-              {/* Timeline dot on the line */}
+              {/* Timeline dot — ONLY for checkpoints */}
               <div className={cn(
                 "absolute right-[-5px] top-[18px] w-3 h-3 rounded-full border-2 transition-all duration-300 z-10",
                 done
@@ -146,8 +149,8 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                 </div>
               </button>
 
-              {/* Expanded children tasks */}
-              <AnimatePresence>
+              {/* Children tasks — expanded by default, collapsible */}
+              <AnimatePresence initial={false}>
                 {isExpanded && hasTasks && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
@@ -164,13 +167,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
 
                         return (
                           <div key={task.id} className="relative">
-                            {/* Child dot on the timeline */}
-                            <div className={cn(
-                              "absolute right-[-22px] top-3 w-2 h-2 rounded-full transition-all duration-300 z-10",
-                              task.is_done
-                                ? "bg-success/70"
-                                : "bg-muted-foreground/20"
-                            )} />
+                            {/* No dot for child tasks — only checkpoints get dots */}
 
                             <div className="glass rounded-xl px-3 py-2">
                               <div className="flex items-center gap-3">
@@ -256,18 +253,13 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
           );
         }
 
-        // Standalone task
+        // Standalone task — no dot, just indented row under previous checkpoint
         const task = item.data as StandaloneTask;
         return (
           <div key={id} className="relative">
             <div className="absolute right-0 top-0 bottom-0 w-[2px] timeline-line rounded-full" />
-            <div className={cn(
-              "absolute right-[-5px] top-4 w-3 h-3 rounded-full border-2 transition-all duration-300 z-10",
-              task.is_done
-                ? "bg-success border-success glow-green"
-                : "bg-muted-foreground/30 border-muted-foreground/30"
-            )} />
-            <div className="mr-4">
+            {/* No timeline dot for standalone tasks */}
+            <div className="mr-6">
               <div className="flex items-center gap-3 py-2.5 px-4 glass rounded-2xl mb-2 glass-hover">
                 <span className={cn(
                   'text-sm font-medium flex-1 text-right',
