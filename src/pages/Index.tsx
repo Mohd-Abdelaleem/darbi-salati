@@ -18,7 +18,7 @@ const Index = () => {
       </div>
 
       {/* Header area */}
-      <div className="sticky top-0 z-20 backdrop-blur-xl border-b border-white/[0.06] bg-[#0b111e]/0">
+      <div className="sticky top-0 z-20 backdrop-blur-xl border-b border-white/[0.06] bg-transparent">
         <AppHeader>
           <PointsBadge day={currentDay} />
         </AppHeader>
