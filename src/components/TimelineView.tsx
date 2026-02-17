@@ -126,7 +126,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                     <span className={cn(
                       "text-base font-medium",
                       theme?.color || 'text-foreground',
-                      done && "line-through opacity-50"
+                      done && "opacity-50"
                     )}>{cp.title_ar}</span>
                   </div>
                 </button>
@@ -169,7 +169,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                       isMainTask && (theme?.color || 'text-primary'),
                                       task.type === 'secondary_task' && 'text-muted-foreground',
                                       task.type === 'regular_task' && 'text-foreground/80',
-                                      task.is_done && 'line-through opacity-50'
+                                      task.is_done && 'opacity-50'
                                     )}
                                   >
                                     {task.title_ar}
@@ -209,7 +209,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                                             onCheckedChange={() => toggleTask(index, undefined, cl.id)}
                                             className="h-3 w-3"
                                           />
-                                          <span className={cn(cl.is_done && 'line-through')}>{cl.title_ar}</span>
+                                          <span>{cl.title_ar}</span>
                                         </label>
                                       ))}
                                     </div>
@@ -242,7 +242,7 @@ export default function TimelineView({ day, onUpdate }: TimelineViewProps) {
                   task.type === 'main_task' && 'text-primary',
                   task.type === 'secondary_task' && 'text-muted-foreground',
                   task.type === 'regular_task' && 'text-foreground/80',
-                  task.is_done && 'line-through opacity-50'
+                  task.is_done && 'opacity-50'
                 )}
               >
                 {task.title_ar}
