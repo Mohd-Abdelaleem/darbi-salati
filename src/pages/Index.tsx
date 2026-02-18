@@ -19,7 +19,7 @@ const Index = () => {
 
   const handleAddCheckpoint = (data: {
     title_ar: string;
-    time?: string;
+    time: string;
     icon: string;
     color: string;
   }) => {
@@ -38,19 +38,16 @@ const Index = () => {
     const newItem: TimelineItem = { kind: 'checkpoint', data: newCheckpoint };
     let newTimeline = [...currentDay.timeline];
 
-    if (data.time) {
-      // Insert ordered by time
-      const insertIdx = newTimeline.findIndex(item => {
-        const t = item.kind === 'checkpoint' ? item.data.time : (item.data as any).time;
-        return t && t > data.time!;
-      });
-      if (insertIdx === -1) {
-        newTimeline.push(newItem);
-      } else {
-        newTimeline.splice(insertIdx, 0, newItem);
-      }
-    } else {
+    // Insert ordered by time — compare only against checkpoints for correct chronological placement
+    const insertIdx = newTimeline.findIndex(item => {
+      if (item.kind !== 'checkpoint') return false;
+      const t = item.data.time;
+      return t && t > data.time;
+    });
+    if (insertIdx === -1) {
       newTimeline.push(newItem);
+    } else {
+      newTimeline.splice(insertIdx, 0, newItem);
     }
 
     updateDay({ ...currentDay, timeline: newTimeline });

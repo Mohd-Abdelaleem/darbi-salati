@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ICON_OPTIONS, COLOR_OPTIONS } from '@/lib/icon-map';
 
 interface AddTaskSheetProps {
   open: boolean;
@@ -21,26 +22,6 @@ interface AddTaskSheetProps {
   nextCheckpointTime?: string;
 }
 
-const ICON_OPTIONS = [
-  { value: '⭐', label: 'نجمة' },
-  { value: '✅', label: 'اكتمل' },
-  { value: '📖', label: 'قراءة' },
-  { value: '🤲', label: 'دعاء' },
-  { value: '💧', label: 'ماء' },
-  { value: '🏃', label: 'رياضة' },
-  { value: '📝', label: 'ملاحظة' },
-  { value: '🕌', label: 'مسجد' },
-];
-
-const COLOR_OPTIONS = [
-  { value: 'text-teal-400', label: 'زمردي', bg: 'bg-teal-400' },
-  { value: 'text-cyan-400', label: 'سماوي', bg: 'bg-cyan-400' },
-  { value: 'text-emerald-400', label: 'أخضر', bg: 'bg-emerald-400' },
-  { value: 'text-amber-400', label: 'ذهبي', bg: 'bg-amber-400' },
-  { value: 'text-violet-400', label: 'بنفسجي', bg: 'bg-violet-400' },
-  { value: 'text-rose-400', label: 'وردي', bg: 'bg-rose-400' },
-];
-
 export default function AddTaskSheet({
   open,
   onClose,
@@ -53,7 +34,7 @@ export default function AddTaskSheet({
   const [time, setTime] = useState('');
   const [customPointsEnabled, setCustomPointsEnabled] = useState(false);
   const [customPoints, setCustomPoints] = useState(5);
-  const [selectedIcon, setSelectedIcon] = useState('⭐');
+  const [selectedIcon, setSelectedIcon] = useState('star');
   const [selectedColor, setSelectedColor] = useState('text-teal-400');
 
   const handleSubmit = () => {
@@ -65,15 +46,16 @@ export default function AddTaskSheet({
       icon: selectedIcon,
       color: selectedColor,
     });
-    // reset
     setTitle('');
     setTime('');
     setCustomPointsEnabled(false);
     setCustomPoints(5);
-    setSelectedIcon('⭐');
+    setSelectedIcon('star');
     setSelectedColor('text-teal-400');
     onClose();
   };
+
+  const SelectedIconComponent = ICON_OPTIONS.find(i => i.value === selectedIcon)?.Icon;
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
@@ -119,18 +101,13 @@ export default function AddTaskSheet({
           {/* Custom points */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Switch
-                checked={customPointsEnabled}
-                onCheckedChange={setCustomPointsEnabled}
-              />
+              <Switch checked={customPointsEnabled} onCheckedChange={setCustomPointsEnabled} />
               <Label className="text-sm text-muted-foreground cursor-pointer">تخصيص نقاط</Label>
             </div>
             {customPointsEnabled && (
               <div className="flex items-center gap-3">
                 <Input
-                  type="number"
-                  min={0}
-                  max={999}
+                  type="number" min={0} max={999}
                   value={customPoints}
                   onChange={(e) => setCustomPoints(Math.max(0, Math.min(999, Number(e.target.value))))}
                   className="w-24 text-center bg-white/[0.05] border-white/10 rounded-xl"
@@ -143,24 +120,32 @@ export default function AddTaskSheet({
             )}
           </div>
 
-          {/* Icon picker */}
+          {/* Icon picker — Lucide mono icons */}
           <div className="space-y-2">
             <Label className="text-sm text-muted-foreground">الأيقونة</Label>
             <div className="flex flex-wrap gap-2">
-              {ICON_OPTIONS.map((ico) => (
-                <button
-                  key={ico.value}
-                  onClick={() => setSelectedIcon(ico.value)}
-                  className={cn(
-                    'w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all',
-                    selectedIcon === ico.value
-                      ? 'bg-primary/30 ring-2 ring-primary scale-110'
-                      : 'bg-white/[0.06] hover:bg-white/[0.1]'
-                  )}
-                >
-                  {ico.value}
-                </button>
-              ))}
+              {ICON_OPTIONS.map((ico) => {
+                const IcoComp = ico.Icon;
+                const colorClass = selectedColor;
+                return (
+                  <button
+                    key={ico.value}
+                    onClick={() => setSelectedIcon(ico.value)}
+                    className={cn(
+                      'w-10 h-10 rounded-xl flex items-center justify-center transition-all',
+                      selectedIcon === ico.value
+                        ? 'bg-primary/30 ring-2 ring-primary scale-110'
+                        : 'bg-white/[0.06] hover:bg-white/[0.1]'
+                    )}
+                    title={ico.label}
+                  >
+                    <IcoComp className={cn(
+                      'w-5 h-5',
+                      selectedIcon === ico.value ? colorClass : 'text-muted-foreground'
+                    )} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -182,7 +167,12 @@ export default function AddTaskSheet({
             </div>
           </div>
 
-          {/* Submit */}
+          {/* Preview */}
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-white/[0.04]">
+            {SelectedIconComponent && <SelectedIconComponent className={cn('w-5 h-5', selectedColor)} />}
+            <span className={cn('text-sm font-medium', selectedColor)}>{title || 'معاينة'}</span>
+          </div>
+
           <Button
             onClick={handleSubmit}
             disabled={!title.trim()}

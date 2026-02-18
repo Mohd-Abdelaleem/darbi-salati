@@ -4,56 +4,43 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ICON_OPTIONS, COLOR_OPTIONS } from '@/lib/icon-map';
 
 interface AddCheckpointSheetProps {
   open: boolean;
   onClose: () => void;
   onAdd: (checkpoint: {
     title_ar: string;
-    time?: string;
+    time: string;
     icon: string;
     color: string;
   }) => void;
 }
 
-const ICON_OPTIONS = [
-  { value: '🌙', label: 'قمر' },
-  { value: '⭐', label: 'نجمة' },
-  { value: '🕌', label: 'مسجد' },
-  { value: '📖', label: 'قراءة' },
-  { value: '🤲', label: 'دعاء' },
-  { value: '💧', label: 'ماء' },
-  { value: '🏃', label: 'رياضة' },
-  { value: '📝', label: 'ملاحظة' },
-];
-
-const COLOR_OPTIONS = [
-  { value: 'text-teal-400', bg: 'bg-teal-400' },
-  { value: 'text-cyan-400', bg: 'bg-cyan-400' },
-  { value: 'text-emerald-400', bg: 'bg-emerald-400' },
-  { value: 'text-amber-400', bg: 'bg-amber-400' },
-  { value: 'text-violet-400', bg: 'bg-violet-400' },
-  { value: 'text-rose-400', bg: 'bg-rose-400' },
-];
-
 export default function AddCheckpointSheet({ open, onClose, onAdd }: AddCheckpointSheetProps) {
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('🌙');
+  const [selectedIcon, setSelectedIcon] = useState('moon');
   const [selectedColor, setSelectedColor] = useState('text-teal-400');
+  const [timeError, setTimeError] = useState(false);
 
   const handleSubmit = () => {
     if (!title.trim()) return;
+    if (!time) {
+      setTimeError(true);
+      return;
+    }
     onAdd({
       title_ar: title.trim(),
-      time: time || undefined,
+      time,
       icon: selectedIcon,
       color: selectedColor,
     });
     setTitle('');
     setTime('');
-    setSelectedIcon('🌙');
+    setSelectedIcon('moon');
     setSelectedColor('text-teal-400');
+    setTimeError(false);
     onClose();
   };
 
@@ -77,38 +64,48 @@ export default function AddCheckpointSheet({ open, onClose, onAdd }: AddCheckpoi
             />
           </div>
 
-          {/* Time */}
+          {/* Time — MANDATORY */}
           <div className="space-y-1.5">
-            <Label className="text-sm text-muted-foreground">وقت المحطة (اختياري)</Label>
+            <Label className="text-sm text-muted-foreground">وقت المحطة *</Label>
             <Input
               type="time"
               value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="bg-white/[0.05] border-white/10 rounded-xl focus-visible:ring-primary/50"
+              onChange={(e) => { setTime(e.target.value); setTimeError(false); }}
+              className={cn(
+                "bg-white/[0.05] border-white/10 rounded-xl focus-visible:ring-primary/50",
+                timeError && "border-destructive ring-1 ring-destructive"
+              )}
             />
-            <p className="text-[11px] text-muted-foreground">
-              {time ? 'ستُرتَّب المحطة حسب الوقت تلقائياً' : 'بدون وقت: ستُضاف في نهاية اليوم'}
-            </p>
+            {timeError && (
+              <p className="text-[11px] text-destructive font-medium">الوقت مطلوب</p>
+            )}
           </div>
 
-          {/* Icon picker */}
+          {/* Icon picker — Lucide mono icons */}
           <div className="space-y-2">
             <Label className="text-sm text-muted-foreground">الأيقونة</Label>
             <div className="flex flex-wrap gap-2">
-              {ICON_OPTIONS.map((ico) => (
-                <button
-                  key={ico.value}
-                  onClick={() => setSelectedIcon(ico.value)}
-                  className={cn(
-                    'w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all',
-                    selectedIcon === ico.value
-                      ? 'bg-primary/30 ring-2 ring-primary scale-110'
-                      : 'bg-white/[0.06] hover:bg-white/[0.1]'
-                  )}
-                >
-                  {ico.value}
-                </button>
-              ))}
+              {ICON_OPTIONS.map((ico) => {
+                const IcoComp = ico.Icon;
+                return (
+                  <button
+                    key={ico.value}
+                    onClick={() => setSelectedIcon(ico.value)}
+                    className={cn(
+                      'w-10 h-10 rounded-xl flex items-center justify-center transition-all',
+                      selectedIcon === ico.value
+                        ? 'bg-primary/30 ring-2 ring-primary scale-110'
+                        : 'bg-white/[0.06] hover:bg-white/[0.1]'
+                    )}
+                    title={ico.label}
+                  >
+                    <IcoComp className={cn(
+                      'w-5 h-5',
+                      selectedIcon === ico.value ? selectedColor : 'text-muted-foreground'
+                    )} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
