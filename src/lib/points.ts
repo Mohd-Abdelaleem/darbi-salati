@@ -43,8 +43,11 @@ export function calculateDayPoints(day: DayData): number {
         }
       }
     } else {
-      // Standalone tasks = 5 each
-      if (item.data.is_done) points += 5;
+      // Standalone tasks = customPoints or 5 each
+      if (item.data.is_done) {
+        const custom = (item.data as any).customPoints;
+        points += typeof custom === 'number' ? custom : 5;
+      }
     }
   }
 
