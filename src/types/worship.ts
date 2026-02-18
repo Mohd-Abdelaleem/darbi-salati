@@ -29,6 +29,11 @@ export interface StandaloneTask {
   title_ar: string;
   is_done: boolean;
   time?: string;
+  customPoints?: number;
+  icon?: string;
+  color?: string;
+  parentCheckpointId?: string;
+  isUserCreated?: boolean;
 }
 
 export type TimelineItem =
