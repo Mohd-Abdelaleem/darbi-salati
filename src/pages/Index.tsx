@@ -6,6 +6,7 @@ import AddCheckpointSheet from '@/components/AddCheckpointSheet';
 import DayNavigation from '@/components/DayNavigation';
 import TimelineView from '@/components/TimelineView';
 import PointsBadge from '@/components/PointsBadge';
+import PerformanceMiniCard from '@/components/dashboard/PerformanceMiniCard';
 import { useDayStore } from '@/hooks/use-day-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkpoint, TimelineItem } from '@/types/worship';
@@ -76,7 +77,11 @@ const Index = () => {
 
       {/* Timeline */}
       <ScrollArea className="flex-1">
-        <div className="pt-2">
+        <div className="pt-2 pb-4">
+          {/* Performance mini card */}
+          <div className="px-4 pb-3">
+            <PerformanceMiniCard />
+          </div>
           <TimelineView day={currentDay} onUpdate={updateDay} />
         </div>
       </ScrollArea>
